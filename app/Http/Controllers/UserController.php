@@ -11,7 +11,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::all();
-        return view('admin.users.index', compact('users'));
+        return view('admin.index', compact('users'));
     }
 
     // عرض صفحة تعديل المستخدم
@@ -36,7 +36,7 @@ class UserController extends Controller
         $user->role = $request->role;
         $user->save();
 
-        return redirect()->route('admin.users.index')->with('success', 'User updated successfully.');
+        return redirect()->route('admin.index')->with('success', 'User updated successfully.');
     }
 
     // حذف مستخدم
@@ -45,7 +45,7 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $user->delete();
 
-        return redirect()->route('admin.users.index')->with('success', 'User deleted successfully.');
+        return redirect()->route('admin.index')->with('success', 'User deleted successfully.');
     }
 }
 

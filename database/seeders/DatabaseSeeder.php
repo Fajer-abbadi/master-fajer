@@ -13,9 +13,14 @@ class DatabaseSeeder extends Seeder
             CategoriesTableSeeder::class,
             ProductsTableSeeder::class,
             statusTableSeeder::class,
-
+            CouponsTableSeeder::class,
             OrdersTableSeeder::class,
             ImagesTableSeeder::class,
+            ReviewsTableSeeder::class,
+            StoresTableSeeder::class,
+            SkinToneSeeder::class,
+            OrderItemsTableSeeder::class,
+            CustomDesignsTableSeeder::class,
         ]);
     }
 }

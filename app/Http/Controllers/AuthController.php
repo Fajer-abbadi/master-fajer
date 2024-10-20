@@ -17,27 +17,30 @@ class AuthController extends Controller
     }
 
     // عملية تسجيل الدخول
-    public function login(Request $request)
-    {
-        $credentials = $request->only('email', 'password');
+   // login logic in AuthController.php
+public function login(Request $request)
+{
+    $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
+    if (Auth::attempt($credentials)) {
+        $request->session()->regenerate();
 
-            // إعادة التوجيه بناءً على الدور
-            if (auth()->user()->role == 'admin') {
-                return redirect()->route('admin.dashboard');
-            } elseif (auth()->user()->role == 'super_admin') {
-                return redirect()->route('super_admin.dashboard');
-            } else {
-                return redirect()->route('user.dashboard');
-            }
+        // توجيه حسب الدور
+        $userRole = auth()->user()->role;
+        if ($userRole == 'admin') {
+            return redirect()->route('admin.index');
+        } elseif ($userRole == 'super_admin') {
+            return redirect()->route('admin.index'); // تعديل إذا كان مسار مختلف
+        } else {
+            return redirect()->route('home.index');
         }
-
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ]);
     }
+
+    return back()->withErrors([
+        'email' => 'بيانات الاعتماد المدخلة غير صحيحة.',
+    ]);
+}
+
 
     // عرض صفحة التسجيل
     public function registerForm()
@@ -51,7 +54,7 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
+            'password' => 'required|string|min:6|',
         ]);
 
         if ($validator->fails()) {
@@ -73,11 +76,11 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         Auth::logout();
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/login');
+        return redirect()->route('login');
     }
+
 }
 

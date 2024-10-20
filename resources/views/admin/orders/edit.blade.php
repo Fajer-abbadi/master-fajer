@@ -16,14 +16,19 @@
     <form action="{{ route('orders.update', $order->id) }}" method="POST">
         @csrf
         @method('PUT')
+
         <div class="form-group">
-            <label for="status">Status</label>
-            <select class="form-control" name="status" required>
-                <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Pending</option>
-                <option value="completed" {{ $order->status == 'completed' ? 'selected' : '' }}>Completed</option>
-                <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+            <label for="status_id">Status</label>
+            <select class="form-control" name="status_id" required>
+                @foreach($statuses as $status)
+                    <option value="{{ $status->id }}" {{ $order->status_id == $status->id ? 'selected' : '' }}>
+                        {{ $status->name }}
+                    </option>
+                @endforeach
             </select>
         </div>
+
         <button type="submit" class="btn btn-primary">Update Order</button>
     </form>
+
 @endsection

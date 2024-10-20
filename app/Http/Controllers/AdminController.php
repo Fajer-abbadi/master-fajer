@@ -9,7 +9,7 @@ use Carbon\Carbon;
 
 class AdminController extends Controller
 {
-    public function showDashboard()
+    public function index()
     {
         // حساب نسبة الزيادة في المبيعات مقارنة بالأمس (مثال)
         $todaySales = Order::whereDate('created_at', Carbon::today())->sum('total_amount');

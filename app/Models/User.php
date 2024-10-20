@@ -61,4 +61,8 @@ class User extends Authenticatable
     {
         return $this->role === 'customer';
     }
+    public function billingInformation()
+    {
+        return $this->hasOne(BillingInformation::class);
+    }
 }

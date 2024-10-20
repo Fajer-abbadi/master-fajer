@@ -9,9 +9,9 @@
                     <div class="d-flex align-items-start row">
                         <div class="col-sm-7">
                             <div class="card-body">
-                                <h5 class="card-title text-primary mb-3">Congratulations {{ $adminName }}! 🎉</h5>
+                                {{-- <h5 class="card-title text-primary mb-3">Congratulations {{ $adminName }}! 🎉</h5> --}}
                                 <p class="mb-6">
-                                    You have done {{ $salesPercentage }}% more sales today.
+                                    {{-- You have done {{ $salesPercentage }}% more sales today. --}}
                                     Check your new badge in your profile.
                                 </p>
                             </div>
@@ -35,7 +35,7 @@
                 <div class="card bg-light text-center">
                     <div class="card-body">
                         <h5 class="card-title">Number of Orders</h5>
-                        <p class="card-text">{{ $ordersCount }}</p>
+                        {{-- <p class="card-text">{{ $ordersCount }}</p> --}}
                     </div>
                 </div>
             </div>
@@ -45,7 +45,7 @@
                 <div class="card bg-light text-center">
                     <div class="card-body">
                         <h5 class="card-title">Number of Users</h5>
-                        <p class="card-text">{{ $usersCount }}</p>
+                        {{-- <p class="card-text">{{ $usersCount }}</p> --}}
                     </div>
                 </div>
             </div>
@@ -55,14 +55,14 @@
                 <div class="card bg-light text-center">
                     <div class="card-body">
                         <h5 class="card-title">Number of Admins</h5>
-                        <p class="card-text">{{ $adminsCount }}</p>
+                        {{-- <p class="card-text">{{ $adminsCount }}</p> --}}
                     </div>
                 </div>
             </div>
 
             <!-- العناصر حسب التصنيفات الموجودة -->
-            @foreach($categories as $category)
-            <div class="col-md-4 mb-4">
+            {{-- @foreach($categories as $category) --}}
+            {{-- <div class="col-md-4 mb-4">
                 <div class="card bg-light text-center">
                     <div class="card-body">
                         <h5 class="card-title">Items in {{ $category->name }}</h5>
@@ -70,14 +70,14 @@
                     </div>
                 </div>
             </div>
-            @endforeach
+            @endforeach --}}
 
             <!-- إجمالي المبيعات -->
             <div class="col-md-12 mb-4">
                 <div class="card bg-light text-center">
                     <div class="card-body">
                         <h5 class="card-title">Total Sales</h5>
-                        <p class="card-text">${{ number_format($totalSales, 2) }}</p>
+                        {{-- <p class="card-text">${{ number_format($totalSales, 2) }}</p> --}}
                     </div>
                 </div>
             </div>

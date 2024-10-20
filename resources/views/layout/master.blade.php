@@ -15,14 +15,16 @@
     rel="stylesheet">
 
     <!-- Css Styles -->
-    <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
-    <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css">
-    <link rel="stylesheet" href="css/elegant-icons.css" type="text/css">
-    <link rel="stylesheet" href="css/jquery-ui.min.css" type="text/css">
-    <link rel="stylesheet" href="css/magnific-popup.css" type="text/css">
-    <link rel="stylesheet" href="css/owl.carousel.min.css" type="text/css">
-    <link rel="stylesheet" href="css/slicknav.min.css" type="text/css">
-    <link rel="stylesheet" href="css/style.css" type="text/css">
+    <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ asset('css/font-awesome.min.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ asset('css/elegant-icons.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ asset('css/jquery-ui.min.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ asset('css/magnific-popup.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ asset('css/owl.carousel.min.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ asset('css/slicknav.min.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}" type="text/css">
+
+
 </head>
 
 <body>
@@ -49,8 +51,7 @@
         </div>
         <div id="mobile-menu-wrap"></div>
         <div class="offcanvas__auth">
-            <a href="#">Login</a>
-            <a href="#">Register</a>
+            <a href="#">login</a>
         </div>
     </div>
     <!-- Offcanvas Menu End -->
@@ -61,42 +62,55 @@
             <div class="row">
                 <div class="col-xl-3 col-lg-2">
                     <div class="header__logo">
-                        <a href="./index.html"><img src="img/logo.png" alt=""></a>
+                        <img src="{{ asset('img/fofologo.png') }}" alt="fofoLogo" style="width: auto; height: 50px;">
                     </div>
                 </div>
                 <div class="col-xl-6 col-lg-7">
                     <nav class="header__menu">
                         <ul>
-                            <li class="active"><a href="./index.html">Home</a></li>
-                            <li><a href="#">Women’s</a></li>
-                            <li><a href="#">Men’s</a></li>
-                            <li><a href="./shop.html">Shop</a></li>
+                            <li class="active"><a href="{{ url('/') }}">Home</a></li>
+                            <li><a href="{{ url('/women') }}">Women’s</a></li>
+                            <li><a href="{{ url('/shop') }}">Shop</a></li>
                             <li><a href="#">Pages</a>
                                 <ul class="dropdown">
-                                    <li><a href="./product-details.html">Product Details</a></li>
-                                    <li><a href="./shop-cart.html">Shop Cart</a></li>
-                                    <li><a href="./checkout.html">Checkout</a></li>
-                                    <li><a href="./blog-details.html">Blog Details</a></li>
+                                    <li><a href="{{ url('/product-details') }}">Product Details</a></li>
+                                    <li><a href="{{ route('cart.show') }}">Shop Cart</a></li>
+                                    <li><a href="{{ url('/checkout') }}">Checkout</a></li>
+                                    <li><a href="{{ url('/blog-details') }}">Blog Details</a></li>
                                 </ul>
                             </li>
-                            <li><a href="./blog.html">Blog</a></li>
-                            <li><a href="./contact.html">Contact</a></li>
+                            <li><a href="{{ url('/blog') }}">Blog</a></li>
+                            <li><a href="{{ url('/contact') }}">Contact</a></li>
                         </ul>
                     </nav>
+
                 </div>
                 <div class="col-lg-3">
                     <div class="header__right">
                         <div class="header__right__auth">
-                            <a href="#">Login</a>
-                            <a href="#">Register</a>
+                            @if(Auth::check())
+                                <!-- إذا كان المستخدم مسجل دخول، عرض "Account" وزر "Logout" -->
+                                <a href="#">Account</a>
+
+                                <!-- فورم تسجيل الخروج -->
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: inline;">
+                                    @csrf
+                                    <button type="submit" class="btn-logout" style="background-color: transparent; border: none; color: rgb(140, 133, 133); font-size: 16px; cursor: pointer;">Logout</button>
+                                </form>
+
+                            @else
+                                <!-- إذا لم يكن مسجل دخول، عرض "Login" -->
+                                <a href="{{ route('login') }}">Login</a>
+                            @endif
                         </div>
+
+
                         <ul class="header__right__widget">
                             <li><span class="icon_search search-switch"></span></li>
-                            <li><a href="#"><span class="icon_heart_alt"></span>
+                            <li><a href="{{ url('/wishlist') }}"><span class="icon_heart_alt"></span>
                                 <div class="tip">2</div>
                             </a></li>
-                            <li><a href="#"><span class="icon_bag_alt"></span>
-                                <div class="tip">2</div>
+                            <li><a href="{{ route('cart.show') }}"><span class="icon_bag_alt"></span></a></li>
                             </a></li>
                         </ul>
                     </div>
@@ -123,8 +137,7 @@
                     <div class="footer__logo">
                         <a href="./index.html"><img src="img/logo.png" alt=""></a>
                     </div>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-                    cilisis.</p>
+                    <p>At FAVittoria, we offer a curated selection of stylish, high-quality fashion to elevate your wardrobe. Discover unique pieces designed to reflect your individuality, with a seamless shopping experience and exceptional customer service.</p>
                     <div class="footer__payment">
                         <a href="#"><img src="img/payment/payment-1.png" alt=""></a>
                         <a href="#"><img src="img/payment/payment-2.png" alt=""></a>
@@ -141,7 +154,6 @@
                         <li><a href="#">About</a></li>
                         <li><a href="#">Blogs</a></li>
                         <li><a href="#">Contact</a></li>
-                        <li><a href="#">FAQ</a></li>
                     </ul>
                 </div>
             </div>
@@ -150,7 +162,6 @@
                     <h6>Account</h6>
                     <ul>
                         <li><a href="#">My Account</a></li>
-                        <li><a href="#">Orders Tracking</a></li>
                         <li><a href="#">Checkout</a></li>
                         <li><a href="#">Wishlist</a></li>
                     </ul>
@@ -198,16 +209,51 @@
 <!-- Search End -->
 
 <!-- Js Plugins -->
-<script src="js/jquery-3.3.1.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script src="js/jquery.magnific-popup.min.js"></script>
-<script src="js/jquery-ui.min.js"></script>
-<script src="js/mixitup.min.js"></script>
-<script src="js/jquery.countdown.min.js"></script>
-<script src="js/jquery.slicknav.js"></script>
-<script src="js/owl.carousel.min.js"></script>
-<script src="js/jquery.nicescroll.min.js"></script>
-<script src="js/main.js"></script>
+<script src="{{ asset('js/jquery-3.3.1.min.js') }}"></script>
+<script>
+$(document).ready(function() {
+    $('.cart-btn').click(function(e) {
+        e.preventDefault();
+
+        var productId = $(this).data('product-id');
+        var quantity = $('.pro-qty input').val();
+
+        $.ajax({
+            url: '{{route('cart.add1')}}',
+
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                product_id: productId,
+                quantity: quantity
+            },
+            success: function(response) {
+                if (response.success) {
+                    alert("Product added to cart");
+                } else {
+                    alert("Failed to add product");
+                }
+            },
+            error: function(xhr) {
+                alert('Error occurred while adding to cart.');
+            }
+        });
+    });
+});
+</script>
+
+
+
+<script src="{{ asset('js/bootstrap.min.js') }}"></script>
+<script src="{{ asset('js/jquery.magnific-popup.min.js') }}"></script>
+<script src="{{ asset('js/jquery-ui.min.js') }}"></script>
+<script src="{{ asset('js/mixitup.min.js') }}"></script>
+<script src="{{ asset('js/jquery.countdown.min.js') }}"></script>
+<script src="{{ asset('js/jquery.slicknav.js') }}"></script>
+<script src="{{ asset('js/owl.carousel.min.js') }}"></script>
+<script src="{{ asset('js/jquery.nicescroll.min.js') }}"></script>
+<script src="{{ asset('js/main.js') }}"></script>
+
 </body>
 
 </html>
