@@ -25,7 +25,7 @@
             </a>
         </li>
 
-        <!-- Manage Users (عرض للجميع) -->
+        <!-- Manage Users -->
         <li class="menu-item {{ request()->routeIs('users.index') ? 'active' : '' }}">
             <a href="{{ route('users.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-user"></i>
@@ -33,7 +33,7 @@
             </a>
         </li>
 
-        <!-- Manage Categories (عرض للجميع) -->
+        <!-- Manage Categories -->
         <li class="menu-item {{ request()->routeIs('categories.index') ? 'active' : '' }}">
             <a href="{{ route('categories.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-category"></i>
@@ -41,7 +41,7 @@
             </a>
         </li>
 
-        <!-- Manage Products (عرض للجميع) -->
+        <!-- Manage Products -->
         <li class="menu-item {{ request()->routeIs('products.index') ? 'active' : '' }}">
             <a href="{{ route('products.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-box"></i>
@@ -49,6 +49,7 @@
             </a>
         </li>
 
+        <!-- Manage Orders -->
         <li class="menu-item {{ request()->routeIs('orders.index') ? 'active' : '' }}">
             <a href="{{ route('orders.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-list-check"></i>
@@ -56,20 +57,39 @@
             </a>
         </li>
 
-
-        <!-- Chat (عرض للجميع) -->
-        <li class="menu-item {{ request()->routeIs('admin.chat') ? 'active' : '' }}">
-            <a href="{{ route('admin.chat') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-chat"></i>
-                <div class="text-truncate">Chat</div>
+        <!-- Manage Coupons -->
+        <li class="menu-item {{ request()->routeIs('coupons.index') ? 'active' : '' }}">
+            <a href="{{ route('coupons.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-gift"></i>
+                <div class="text-truncate">Manage Coupons</div>
             </a>
         </li>
 
-        <!-- Email (عرض للجميع) -->
-        <li class="menu-item {{ request()->routeIs('admin.email') ? 'active' : '' }}">
-            <a href="{{ route('admin.email') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-envelope"></i>
-                <div class="text-truncate">Email</div>
+        <!-- Manage Status -->
+        <li class="menu-item {{ request()->routeIs('status.index') ? 'active' : '' }}">
+            <a href="{{ route('status.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-tachometer"></i>
+                <div class="text-truncate">Manage Status</div>
+            </a>
+        </li>
+
+        <!-- Manage Blog -->
+        <li class="menu-item {{ request()->routeIs('blog.index') ? 'active' : '' }}">
+            <a href="{{ route('admin.blog.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-news"></i>
+                <div class="text-truncate">Manage Blog</div>
+            </a>
+        </li>
+
+
+
+        <!-- Manage Comments -->
+
+         <!-- Chat -->
+         <li class="menu-item {{ request()->routeIs('admin.chat') ? 'active' : '' }}">
+            <a href="{{ route('admin.chat') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-chat"></i>
+                <div class="text-truncate">Chat</div>
             </a>
         </li>
     </ul>

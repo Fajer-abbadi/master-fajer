@@ -5,7 +5,13 @@ use App\Http\Controllers\ShopController;
 use App\Http\Controllers\ProductdetailsController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
-
+use App\Http\Controllers\UserDashboardController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\BlogController;
+use App\Http\Controllers\ManageCouponController;
+use App\Http\Controllers\ManageStatusController;
+use App\Http\Controllers\ManageBlogController;
+use App\Http\Controllers\ChatController;
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ManageUsersController;
@@ -23,7 +29,7 @@ use App\Http\Controllers\HomeController;
 | Web Routes
 |--------------------------------------------------------------------------
 */
-
+// route of adminpages
 // Routes for Login and Register
 Route::get('/login', [AuthController::class, 'loginForm'])->name('login1');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
@@ -67,6 +73,25 @@ Route::get('/admin/email', function () {
     return view('admin.email');
 })->name('admin.email');
 // routes/web.php
+Route::resource('coupons', ManageCouponController::class);
+Route::resource('status', ManageStatusController::class);
+
+Route::prefix('admin')->group(function () {
+    Route::get('/blog', [ManageBlogController::class, 'index'])->name('admin.blog.index'); // صفحة عرض كل البوستات
+    Route::get('/blog/create', [ManageBlogController::class, 'create'])->name('blog.create'); // صفحة إنشاء بوست جديد
+    Route::post('/blog', [ManageBlogController::class, 'store'])->name('blog.store'); // حفظ بوست جديد
+    Route::get('/blog/{id}/edit', [ManageBlogController::class, 'edit'])->name('blog.edit'); // صفحة تعديل البوست
+    Route::put('/blog/{id}', [ManageBlogController::class, 'update'])->name('blog.update'); // تحديث البوست
+    Route::delete('/blog/{id}', [ManageBlogController::class, 'destroy'])->name('blog.destroy'); // حذف البوست
+});
+
+Route::get('/admin/chat', [ChatController::class, 'index'])->name('admin.chat'); Route::get('/admin/chat/messages/{user}', [ChatController::class, 'getMessages'])->name('chat.getMessages'); // لجلب الرسائل
+Route::post('/admin/chat/send', [ChatController::class, 'sendMessage'])->name('chat.sendMessage'); // لإرسال الرسائل
+
+
+// end route of admin page////////////////////////////////////////////////////////////////////////////////
+
+
 
 
 Route::get('/', [HomeController::class, 'index'])->name('home.index');
@@ -98,6 +123,7 @@ Route::get('/contact', function () {
 //     return view('home.shop-cart');
 // });
 
+Route::get('/women-sales', [ProductController::class, 'womenSales'])->name('women.sales');
 
 Route::get('/product-details/{id}', [ProductdetailsController::class, 'show'])->name('product.details');
 
@@ -159,6 +185,16 @@ Route::delete('/cart-remove/{id}', [CartController::class, 'removeFromCart'])->n
 
 // تطبيق كود الخصم
 Route::post('/cart/apply-discount', [CartController::class, 'applyDiscount'])->name('cart.applyDiscount');
-
+Route::post('/checkout/billing', [CheckoutController::class, 'storeBillingInfo'])->name('checkout.billing');
+Route::post('/checkout/order', [CheckoutController::class, 'storeOrder'])->name('checkout.order');
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
-Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+
+Route::get('/user/dashboard', [UserDashboardController::class, 'index'])->name('user.dashboard')->middleware('auth');
+Route::post('/user/update', [UserDashboardController::class, 'updateProfile'])->name('user.updateProfile')->middleware('auth');
+
+Route::resource('posts', PostController::class)->middleware('auth');
+
+// لإضافة تعليق على منشور
+Route::post('/posts/{post}/comment', [PostController::class, 'addComment'])->name('posts.addComment');
+Route::get('/blog/{post}', [PostController::class, 'show'])->name('blog.details');
+Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');

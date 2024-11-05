@@ -65,6 +65,20 @@ class ProductController extends Controller
 
         return redirect()->route('products.index')->with('success', 'Product deleted successfully.');
     }
+    public function womenSales()
+    {
+        // جلب المنتجات التي عليها تخفيض مع دعم الـ Pagination
+        $products = Product::where('is_hot', 1)->paginate(9); // عدد المنتجات لكل صفحة
+
+        return view('home.sales', compact('products'));
+    }
+
+
+
+
+
+
+
 }
 
 

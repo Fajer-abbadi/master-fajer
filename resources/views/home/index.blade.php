@@ -13,7 +13,7 @@
                             <div
                                 style="background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(5px); padding: 20px; border-radius: 10px; display: inline-block;">
                                 <h1 style="color: #000;">WOMEN FASHION</h1>
-                                <a href="#" class="btn btn-outline-light">Check Collection</a>
+                                <a style="color: #000;" href="#" class="btn btn-outline-light">Check Collection</a>
                             </div>
                         </div>
                     </div>
@@ -438,43 +438,78 @@ setInterval(showNextSlide, 3000);
     <!-- Discount Section Begin -->
     <section class="discount">
         <div class="container">
-            <div class="row">
-                <div class="col-lg-6 p-0">
-                    <div class="discount__pic">
-                        <img src="{{ asset('img/sale.jpeg') }}" alt="Sale Image">
-                    </div>
-                </div>
-                <div class="col-lg-6 p-0">
-                    <div class="discount__text">
-                        <div class="discount__text__title">
-                            <span>Discount</span>
-                            <h2>Summer 2024</h2>
-                            <h5><span>Sale</span> 50%</h5>
-                        </div>
-                        <div class="discount__countdown" id="countdown-time">
-                            <div class="countdown__item">
-                                <span>22</span>
-                                <p>Days</p>
-                            </div>
-                            <div class="countdown__item">
-                                <span>18</span>
-                                <p>Hour</p>
-                            </div>
-                            <div class="countdown__item">
-                                <span>46</span>
-                                <p>Min</p>
-                            </div>
-                            <div class="countdown__item">
-                                <span>05</span>
-                                <p>Sec</p>
+            <section class="discount">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-6 p-0">
+                            <div class="discount__pic">
+                                <img src="{{ asset('img/sale.jpeg') }}" alt="Sale Image">
                             </div>
                         </div>
-                        <a href="#">Shop now</a>
+                        <div class="col-lg-6 p-0">
+                            <div class="discount__text">
+                                <div class="discount__text__title">
+                                    <span>Discount</span>
+                                    <h2>Summer 2024</h2>
+                                    <h5><span>Sale</span> 50%</h5>
+                                </div>
+                                <div class="discount__countdown" id="countdown-time">
+                                    <div class="countdown__item">
+                                        <span id="days">7</span>
+                                        <p>Days</p>
+                                    </div>
+                                    <div class="countdown__item">
+                                        <span id="hours">0</span>
+                                        <p>Hours</p>
+                                    </div>
+                                    <div class="countdown__item">
+                                        <span id="minutes">0</span>
+                                        <p>Min</p>
+                                    </div>
+                                    <div class="countdown__item">
+                                        <span id="seconds">0</span>
+                                        <p>Sec</p>
+                                    </div>
+                                </div>
+                                <a href="#">Shop now</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
+            </section>
+
+            <script>
+            // إعداد وقت النهاية ليكون بعد 7 أيام من الآن
+            const countdownDate = new Date().getTime() + (7 * 24 * 60 * 60 * 1000); // 7 أيام من الآن
+
+            // دالة العد التنازلي
+            const countdownInterval = setInterval(function() {
+                // الحصول على الوقت الحالي
+                const now = new Date().getTime();
+                // حساب الفرق بين الوقت الحالي ووقت النهاية
+                const timeLeft = countdownDate - now;
+
+                // حساب الأيام، الساعات، الدقائق، والثواني المتبقية
+                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+                // عرض القيم في العناصر المحددة
+                document.getElementById("days").innerHTML = days;
+                document.getElementById("hours").innerHTML = hours;
+                document.getElementById("minutes").innerHTML = minutes;
+                document.getElementById("seconds").innerHTML = seconds;
+
+                // إنهاء العد التنازلي إذا انتهى الوقت
+                if (timeLeft < 0) {
+                    clearInterval(countdownInterval);
+                    document.getElementById("countdown-time").innerHTML = "EXPIRED";
+                }
+            }, 1000);
+            </script>
+
+
     <!-- Discount Section End -->
 
     <!-- Services Section Begin -->
@@ -492,7 +527,7 @@ setInterval(showNextSlide, 3000);
                     <div class="services__item">
                         <i class="fa fa-money"></i>
                         <h6>Money Back Guarantee</h6>
-                        <p>If good have Problems</p>
+                        <p>If good have   </p>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-4 col-sm-6">

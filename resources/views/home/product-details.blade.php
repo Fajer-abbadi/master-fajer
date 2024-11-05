@@ -50,7 +50,17 @@
                             <span>( {{ $product->reviews_count }} reviews )</span>
                         </div>
 
-                        <div class="product__details__price">${{ $product->price }} <span>${{ $product->old_price }}</span></div>
+                        <div class="product__price">
+                            @if($product->is_hot == 1 && $product->discount_price > 0)
+                                <span class="new-price">${{ $product->discount_price }}</span>
+                            @else
+                                <span class="price">${{ $product->price }}</span>
+                            @endif
+                        </div>
+
+
+
+
                         <p>{{ $product->description }}</p>
                         <div class="product__details__button">
                             <div class="quantity">

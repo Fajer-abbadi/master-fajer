@@ -69,7 +69,7 @@
                     <nav class="header__menu">
                         <ul>
                             <li class="active"><a href="{{ url('/') }}">Home</a></li>
-                            <li><a href="{{ url('/women') }}">Women’s</a></li>
+                            <li><a href="{{ route('women.sales') }}">sales</a></li>
                             <li><a href="{{ url('/shop') }}">Shop</a></li>
                             <li><a href="#">Pages</a>
                                 <ul class="dropdown">
@@ -90,7 +90,7 @@
                         <div class="header__right__auth">
                             @if(Auth::check())
                                 <!-- إذا كان المستخدم مسجل دخول، عرض "Account" وزر "Logout" -->
-                                <a href="#">Account</a>
+                                <a href="{{ route('user.dashboard') }}">Account</a>
 
                                 <!-- فورم تسجيل الخروج -->
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: inline;">
@@ -252,6 +252,8 @@ $(document).ready(function() {
 <script src="{{ asset('js/jquery.slicknav.js') }}"></script>
 <script src="{{ asset('js/owl.carousel.min.js') }}"></script>
 <script src="{{ asset('js/jquery.nicescroll.min.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script src="{{ asset('js/main.js') }}"></script>
 
 </body>
