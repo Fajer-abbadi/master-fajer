@@ -41,13 +41,12 @@
                                             alt="{{ $cartItem->product->name }}">
                                         <div class="cart__product__item__title">
                                             <h6>{{ $cartItem->product->name }}</h6>
-                                            <div class="rating">
-                                                <i class="fa fa-star"></i>
-                                                <i class="fa fa-star"></i>
-                                                <i class="fa fa-star"></i>
-                                                <i class="fa fa-star"></i>
-                                                <i class="fa fa-star"></i>
-                                            </div>
+                                            @foreach ($cartItems as $cartItem)
+                                           
+                                        @endforeach
+
+
+
                                         </div>
                                     </td>
                                     <td class="cart__price">${{ $cartItem->product->price }}</td>

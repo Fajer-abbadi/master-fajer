@@ -2,11 +2,9 @@
     <div class="app-brand demo">
         <a href="{{ route('admin.index') }}" class="app-brand-link">
             <span class="app-brand-logo demo">
-                <svg width="25" viewBox="0 0 25 42" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                    <!-- SVG محتوى الـ -->
-                </svg>
+
             </span>
-            <span class="app-brand-text demo menu-text fw-bold ms-2">Admin Panel</span>
+            <span class="app-brand-text demo menu-text fw-bold ms-1" style="margin-right: 0; padding-right: 50px;">Admin Panel</span>
         </a>
 
         <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
@@ -22,14 +20,6 @@
             <a href="{{ route('admin.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-home-smile"></i>
                 <div class="text-truncate">Dashboard</div>
-            </a>
-        </li>
-
-        <!-- Manage Users -->
-        <li class="menu-item {{ request()->routeIs('users.index') ? 'active' : '' }}">
-            <a href="{{ route('users.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-user"></i>
-                <div class="text-truncate">Manage Users</div>
             </a>
         </li>
 
@@ -87,10 +77,15 @@
 
          <!-- Chat -->
          <li class="menu-item {{ request()->routeIs('admin.chat') ? 'active' : '' }}">
-            <a href="{{ route('admin.chat') }}" class="menu-link">
+            <a href="{{ route('admin.chat', ['receiverId' => 1]) }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-chat"></i>
                 <div class="text-truncate">Chat</div>
+                @if($newMessagesCount > 0)
+                    <span class="badge bg-danger">{{ $newMessagesCount }}</span>
+                @endif
             </a>
         </li>
+
+
     </ul>
 </aside>

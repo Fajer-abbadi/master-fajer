@@ -2,23 +2,25 @@
 
 namespace App\Providers;
 
+use App\Models\Message;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Auth;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
-    public function register(): void
-    {
-        //
-    }
+    public function boot()
+{
+    View::composer('*', function ($view) {
+        // احسب عدد الرسائل غير المقروءة التي وصلت إلى المسؤول فقط
+        $adminId = Auth::id(); // الحصول على ID المسؤول الحالي
+        $newMessagesCount = Message::where('receiver_id', $adminId)
+            ->where('is_read', 0)
+            ->count();
 
-    /**
-     * Bootstrap any application services.
-     */
-    public function boot(): void
-    {
-        //
-    }
+        // مرر المتغير لجميع الـ views
+        $view->with('newMessagesCount', $newMessagesCount);
+    });
+}
+
 }

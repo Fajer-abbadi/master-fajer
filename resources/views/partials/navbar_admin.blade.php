@@ -13,86 +13,97 @@ id="layout-navbar">
   <!-- Search -->
   <div class="navbar-nav align-items-center">
     <div class="nav-item d-flex align-items-center">
-      <i class="bx bx-search bx-md"></i>
-      <input
-        type="text"
-        class="form-control border-0 shadow-none ps-1 ps-sm-2"
-        placeholder="Search..."
-        aria-label="Search..." />
+        <form id="search-form" class="d-flex align-items-center" onsubmit="return false;">
+            <i class="bx bx-search bx-md" id="search-icon" style="cursor: pointer;"></i>
+            <input type="text" name="query" id="search-input" class="form-control border-0 shadow-none ps-1 ps-sm-2" placeholder="Search..." aria-label="Search..." required>
+        </form>
     </div>
-  </div>
+</div>
+
+<script>
+    document.getElementById('search-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // منع إعادة التحميل الافتراضي للنموذج
+            performSearch();
+        }
+    });
+
+    document.getElementById('search-icon').addEventListener('click', function () {
+        performSearch();
+    });
+
+    function performSearch() {
+        let query = document.getElementById('search-input').value.toLowerCase().trim();
+
+        // خريطة المسارات
+        const pages = {
+            "dashboard": "{{ route('admin.index') }}",
+            "manage categories": "{{ route('categories.index') }}",
+            "manage products": "{{ route('products.index') }}",
+            "manage orders": "{{ route('orders.index') }}",
+            "manage coupons": "{{ route('coupons.index') }}",
+            "manage status": "{{ route('status.index') }}",
+            "manage blog": "{{ route('admin.blog.index') }}",
+            "chat": "{{ route('admin.chat', ['receiverId' =>1])  }}",
+            "user dashboard": "{{ route('user.dashboard') }}"
+        };
+
+        // تحقق من وجود المدخلات ضمن العناصر الموجودة
+        if (pages[query]) {
+            window.location.href = pages[query]; // إعادة التوجيه للصفحة المطلوبة
+        } else {
+            alert("No matching page found."); // رسالة تنبيه في حال لم يتم العثور على مطابقة
+        }
+    }
+</script>
   <!-- /Search -->
 
   <ul class="navbar-nav flex-row align-items-center ms-auto">
     <!-- Place this tag where you want the button to render. -->
-    <li class="nav-item lh-1 me-4">
-      <a
-        class="github-button"
-        href="https://github.com/themeselection/sneat-html-admin-template-free"
-        data-icon="octicon-star"
-        data-size="large"
-        data-show-count="true"
-        aria-label="Star themeselection/sneat-html-admin-template-free on GitHub"
-        >Star</a
-      >
-    </li>
 
     <!-- User -->
     <li class="nav-item navbar-dropdown dropdown-user dropdown">
-      <a
-        class="nav-link dropdown-toggle hide-arrow p-0"
-        href="javascript:void(0);"
-        data-bs-toggle="dropdown">
-        <div class="avatar avatar-online">
-          <img src="../assets/img/avatars/1.png" alt class="w-px-40 h-auto rounded-circle" />
-        </div>
-      </a>
-      <ul class="dropdown-menu dropdown-menu-end">
-        <li>
-          <a class="dropdown-item" href="#">
-            <div class="d-flex">
-              <div class="flex-shrink-0 me-3">
-                <div class="avatar avatar-online">
-                  <img src="../assets/img/avatars/1.png" alt class="w-px-40 h-auto rounded-circle" />
-                </div>
-              </div>
-              <div class="flex-grow-1">
-                <h6 class="mb-0">John Doe</h6>
-                <small class="text-muted">Admin</small>
-              </div>
+        <a
+          class="nav-link dropdown-toggle hide-arrow p-0"
+          href="javascript:void(0);"
+          data-bs-toggle="dropdown"
+        >
+            <div class="avatar avatar" style="background-color: #6B429C; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; color: #fff; font-weight: bold; font-size: 18px;">
+                <!-- عرض الحرف الأول من اسم الآدمن -->
+                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
             </div>
-          </a>
-        </li>
-        <li>
-          <div class="dropdown-divider my-1"></div>
-        </li>
-        <li>
-          <a class="dropdown-item" href="#">
-            <i class="bx bx-user bx-md me-3"></i><span>My Profile</span>
-          </a>
-        </li>
-        <li>
-          <a class="dropdown-item" href="#"> <i class="bx bx-cog bx-md me-3"></i><span>Settings</span> </a>
-        </li>
-        <li>
-          <a class="dropdown-item" href="#">
-            <span class="d-flex align-items-center align-middle">
-              <i class="flex-shrink-0 bx bx-credit-card bx-md me-3"></i
-              ><span class="flex-grow-1 align-middle">Billing Plan</span>
-              <span class="flex-shrink-0 badge rounded-pill bg-danger">4</span>
-            </span>
-          </a>
-        </li>
-        <li>
-          <div class="dropdown-divider my-1"></div>
-        </li>
-        <li>
-          <a class="dropdown-item" href="javascript:void(0);">
-            <i class="bx bx-power-off bx-md me-3"></i><span>Log Out</span>
-          </a>
-        </li>
-      </ul>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+              <a class="dropdown-item" href="#">
+                <div class="d-flex">
+                  <div class="flex-shrink-0 me-3">
+                    <div class="avatar avatar-" style="background-color: #4a76a8; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; color: #fff; font-weight: bold; font-size: 18px;">
+                        <!-- نفس الأفاتار الذي يعرض الحرف الأول من اسم الآدمن -->
+                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                    </div>
+                  </div>
+                  <div class="flex-grow-1">
+                    <h6 class="mb-0">{{ auth()->user()->name }}</h6>
+                    <small class="text-muted">Admin</small>
+                  </div>
+                </div>
+              </a>
+            </li>
+            <li>
+              <div class="dropdown-divider my-1"></div>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{{ route('login2') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                <i class="bx bx-power-off bx-md me-3"></i><span>Log Out</span>
+              </a>
+              <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                  @csrf
+              </form>
+            </li>
+        </ul>
     </li>
+
     <!--/ User -->
   </ul>
 </div>

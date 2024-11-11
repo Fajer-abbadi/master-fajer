@@ -38,7 +38,7 @@ class ManageBlogController extends Controller
             $post->image = basename($imagePath);
         }
 
-        $post->user_id = auth()->user()->id;
+        $post->user_id = auth()->id(); // تعيين معرف المستخدم الحالي
         $post->save();
 
         return redirect()->route('blog.index')->with('success', 'Post created successfully');

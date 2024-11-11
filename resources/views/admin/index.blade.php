@@ -9,7 +9,7 @@
                     <div class="d-flex align-items-start row">
                         <div class="col-sm-7">
                             <div class="card-body">
-                                {{-- <h5 class="card-title text-primary mb-3">Congratulations {{ $adminName }}! 🎉</h5> --}}
+                                <h5 class="card-title text-primary mb-3">Congratulations {{ $adminName }}! 🎉</h5>
                                 <p class="mb-6">
                                     {{-- You have done {{ $salesPercentage }}% more sales today. --}}
                                     Check your new badge in your profile.
@@ -27,46 +27,44 @@
             </div>
         </div>
 
-        <h3 class="mb-4">Admin Dashboard</h3>
-
         <div class="row">
             <!-- عدد الطلبات -->
             <div class="col-md-4 mb-4">
-                <div class="card bg-light text-center">
+                <div class="card text-center" style="background-color: #a688ca; border: none; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); border-radius: 10px;">
                     <div class="card-body">
-                        <h5 class="card-title">Number of Orders</h5>
-                        {{-- <p class="card-text">{{ $ordersCount }}</p> --}}
+                        <h5 class="card-title" style="font-weight: bold; color: #333;">Number of Orders</h5>
+                        <p class="card-text" style="font-size: 1.2em; color: #555;">{{ $ordersCount }}</p>
                     </div>
                 </div>
             </div>
 
             <!-- عدد المستخدمين -->
             <div class="col-md-4 mb-4">
-                <div class="card bg-light text-center">
+                <div class="card text-center" style="background-color: #a688ca; border: none; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); border-radius: 10px;">
                     <div class="card-body">
-                        <h5 class="card-title">Number of Users</h5>
-                        {{-- <p class="card-text">{{ $usersCount }}</p> --}}
+                        <h5 class="card-title" style="font-weight: bold; color: #333;">Number of Users</h5>
+                        <p class="card-text" style="font-size: 1.2em; color: #555;">{{ $usersCount }}</p>
                     </div>
                 </div>
             </div>
 
             <!-- عدد المدراء -->
             <div class="col-md-4 mb-4">
-                <div class="card bg-light text-center">
+                <div class="card text-center" style="background-color: #a688ca; border: none; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); border-radius: 10px;">
                     <div class="card-body">
-                        <h5 class="card-title">Number of Admins</h5>
-                        {{-- <p class="card-text">{{ $adminsCount }}</p> --}}
+                        <h5 class="card-title" style="font-weight: bold; color: #333;">Number of Admins</h5>
+                        <p class="card-text" style="font-size: 1.2em; color: #555;">{{ $adminsCount }}</p>
                     </div>
                 </div>
             </div>
 
             <!-- العناصر حسب التصنيفات الموجودة -->
-            {{-- @foreach($categories as $category) --}}
-            {{-- <div class="col-md-4 mb-4">
-                <div class="card bg-light text-center">
+            {{-- @foreach($categories as $category)
+            <div class="col-md-4 mb-4">
+                <div class="card text-center" style="background-color: #F5F5F9; border: none; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); border-radius: 10px;">
                     <div class="card-body">
-                        <h5 class="card-title">Items in {{ $category->name }}</h5>
-                        <p class="card-text">{{ $category->products_count }}</p>
+                        <h5 class="card-title" style="font-weight: bold; color: #333;">Items in {{ $category->name }}</h5>
+                        <p class="card-text" style="font-size: 1.2em; color: #555;">{{ $category->products_count }}</p>
                     </div>
                 </div>
             </div>
@@ -74,16 +72,16 @@
 
             <!-- إجمالي المبيعات -->
             <div class="col-md-12 mb-4">
-                <div class="card bg-light text-center">
+                <div class="card text-center" style="background-color: #a688ca; border: none; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); border-radius: 10px;">
                     <div class="card-body">
-                        <h5 class="card-title">Total Sales</h5>
-                        {{-- <p class="card-text">${{ number_format($totalSales, 2) }}</p> --}}
+                        <h5 class="card-title" style="font-weight: bold; color: #333;">Total Sales</h5>
+                        <p class="card-text" style="font-size: 1.2em; color: #555;">${{ number_format($totalSales, 2) }}</p>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-@endsection --}}
+
+@endsection
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
     <div class="app-brand demo">
         <a href="{{ route('admin.index') }}" class="app-brand-link">
@@ -137,18 +135,12 @@
 
         <!-- Chat -->
         <li class="menu-item {{ request()->routeIs('admin.chat') ? 'active' : '' }}">
-            <a href="{{ route('admin.chat') }}" class="menu-link">
+            <a href="{{ route('admin.chat',['receiverId' => 1]) }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-chat"></i>
                 <div class="text-truncate">Chat</div>
             </a>
         </li>
 
-        <!-- Email -->
-        <li class="menu-item {{ request()->routeIs('admin.email') ? 'active' : '' }}">
-            <a href="{{ route('admin.email') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-envelope"></i>
-                <div class="text-truncate">Email</div>
-            </a>
-        </li>
+
     </ul>
 </aside>

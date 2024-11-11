@@ -1,68 +1,130 @@
 @extends('layout.admin_master')
 
 @section('content')
-<div class="chat-header" style="padding:1px; background-color: #a90f0f; color: #050101; text-align: center;">
-    <h1 style=" color: #f0ecec";>Chat with Users</h1>
-</div>
+@php
+    // تحديث جميع الرسائل غير المقروءة إلى مقروءة عند فتح الصفحة
+    \App\Models\Message::where('receiver_id', auth()->id())
+        ->where('sender_id', $receiver->id)
+        ->where('is_read', 0)
+        ->update(['is_read' => 1]);
+@endphp
 
-<div class="chat-container" style="display: flex; height: calc(100vh - 100px); margin-left: 20px; margin-top: 10px; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
-    <div class="chat-sidebar" style="width: 15%; background-color: #a90f0f; color: #ecf0f1; padding: 20px;">
-        <h3 style="font-size: 18px; margin-bottom: 15px; color: #ecf0f1;">Users</h3>
-        <ul id="user-list" style="list-style: none; padding: 0;">
-            <li style="padding: 15px; border-bottom: 1px solid #34495e; cursor: pointer; transition: background-color 0.3s;">John Doe</li>
-            <li style="padding: 15px; border-bottom: 1px solid #34495e; cursor: pointer; transition: background-color 0.3s;">Jane Smith</li>
-            <!-- أضف المستخدمين الديناميكيين هنا -->
-        </ul>
-    </div>
-    <div class="chat-main" style="flex: 1; display: flex; flex-direction: column; justify-content: space-between; background-color: #ecf0f1; padding: 20px;">
-        <div class="chat-messages" id="messages" style="flex: 1; padding: 15px; overflow-y: auto; background-color: #fff; border-radius: 5px; box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);">
-            <!-- عرض الرسائل هنا -->
-        </div>
-        <div class="chat-input" style="display: flex; align-items: center; padding: 10px 0; border-top: 1px solid #ddd; background-color: #fff;">
-            <textarea id="message-input" placeholder="Type your message..." rows="2" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px; resize: none; margin-right: 10px;"></textarea>
-            <button onclick="sendMessage()" class="btn btn-primary" style="padding: 10px 20px; background-color: #4a76a8; color: #fff; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; transition: background-color 0.3s;">Send</button>
-        </div>
-    </div>
-</div>
-@endsection
+    <div style="width: 80%; margin: 20px auto; padding: 15px; background-color: #ffffff; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);">
+        <h1 style="font-size: 24px; font-weight: bold; color: #333; text-align: center; margin-bottom: 15px;">Chat with Users</h1>
 
-@section('scripts')
-<script>
-    function loadMessages(userId) {
-        fetch(`/admin/chat/messages/${userId}`)
-            .then(response => response.json())
-            .then(messages => {
-                let messagesContainer = document.getElementById('messages');
-                messagesContainer.innerHTML = '';
-                messages.forEach(msg => {
-                    let messageClass = msg.sender_id === {{ auth()->id() }} ? 'user-message' : 'other-message';
-                    messagesContainer.innerHTML += `<p class="${messageClass}" style="padding: 10px 15px; border-radius: 10px; margin: 10px 0; max-width: 70%; word-wrap: break-word; font-size: 15px; background-color: ${messageClass === 'user-message' ? '#4a76a8' : '#bdc3c7'}; color: ${messageClass === 'user-message' ? '#fff' : '#2c3e50'}; align-self: ${messageClass === 'user-message' ? 'flex-end' : 'flex-start'};">${msg.message}</p>`;
-                });
-                messagesContainer.scrollTop = messagesContainer.scrollHeight; // للتمرير للأسفل عند تحميل الرسائل
+        <div class="chat-container" style="display: flex; height: 500px; border-radius: 10px; overflow: hidden;">
+            <!-- Sidebar for Users -->
+            <div class="chat-sidebar" style="width: 18%; background-color: #A688CA; color: #fff; padding: 10px; border-radius: 10px 0 0 10px; overflow-y: auto;">
+                <h3 style="font-size: 1em; color: #fff; text-align: center; margin-bottom: 10px;">Chats</h3>
+                <ul id="user-list" style="list-style: none; padding: 0; margin: 0;">
+                    @if ($chatPartners->isNotEmpty())
+                        @foreach ($chatPartners as $partner)
+                            <a href="{{ route('admin.chat', ['receiverId' => $partner->id]) }}" class="chat-history-item" style="display: block; color: #fff; text-decoration: none; transition: background-color 0.2s; border-radius: 5px; margin-bottom: 10px; padding: 8px; background-color: #9B89C9;">
+                                <div style="font-size: 1em; font-weight: bold; color: #FFFFFF; margin-bottom: 4px;">
+                                    {{ $partner->name ?? 'User ID: ' . $partner->id }}
+                                </div>
+                                <div style="font-size: 0.8em; color: #e0e0e0;">
+                                    {{ $partner->lastMessage ? $partner->lastMessage->created_at->diffForHumans() : __('messages.Nohistory') }}
+                                </div>
+                            </a>
+                        @endforeach
+                    @else
+                        <p style="text-align: center; color: #e0e0e0;">{{ __('messages.Nohistory') }}</p>
+                    @endif
+                </ul>
+            </div>
+
+            <!-- Main Chat Area -->
+            <div class="chat-main" style="flex: 1; display: flex; flex-direction: column; background-color: #f7f5fa; padding: 15px; border-radius: 0 10px 10px 0;">
+                <!-- Chat Header with User Name -->
+                <div id="chat-header" style="background-color: #9a66d1; color: #ffffff; padding: 10px; border-radius: 10px; font-weight: bold; margin-bottom: 10px; text-align: center;">
+                    chat with {{ $receiver->name }}
+                </div>
+
+                <!-- Chat Messages Area -->
+                <div id="messages" style="flex: 1; overflow-y: auto; padding: 10px; background-color: #A688CA; border-radius: 10px; box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);">
+                    @foreach ($messages as $message)
+                        <div class="message {{ $message->sender_id === Auth::id() ? 'sent' : 'received' }}" style="display: flex; margin-bottom: 8px; {{ $message->sender_id === Auth::id() ? 'justify-content: flex-end;' : 'justify-content: flex-start;' }}">
+                            <div class="message-content" style="max-width: 60%; padding: 10px; border-radius: 10px; {{ $message->sender_id === Auth::id() ? 'background-color: #b7acc3; color: #e0e0e0;' : 'background-color: #9a66d1; color: #fff;' }}">
+                                <p style="margin: 0; font-size: 0.9em;">{{ $message->message }}</p>
+                                <span class="message-time" style="font-size: 0.75em; color: #e0e0e0; display: block; text-align: right; margin-top: 5px;">
+                                    {{ $message->created_at->format('H:i') }}
+                                </span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                <!-- Chat Input -->
+                <div style="display: flex; align-items: center; padding: 8px; background-color: #ffffff; border-radius: 10px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); margin-top: 10px;">
+                    <form id="chat-form" action="{{ route('chat.sendMessage') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="receiver_id" value="{{ $receiverId }}">
+                        <input type="text" name="message_content" class="form-control" placeholder="Type a message..." required style="flex: 1; border: none; border-radius: 10px; padding: 10px;">
+                        <button type="submit" class="btn" style="background-color: #A688CA; color: #fff; border-radius: 10px; padding: 10px 20px; margin-left: 10px;">Send</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let lastMessageId = {{ $messages->last()->id ?? 0 }}; // Track the last message ID
+
+        // Function to fetch new messages
+        function fetchMessages() {
+            $.ajax({
+                url: '{{ route('chat.getMessages', ['receiverId' => $receiverId]) }}',
+                method: 'GET',
+                data: { last_id: lastMessageId },
+                success: function(data) {
+                    if (data.length > 0) {
+                        data.forEach(message => {
+                            lastMessageId = Math.max(lastMessageId, message.id);
+
+                            const messageClass = message.sender_id == {{ Auth::id() }} ? 'sent' : 'received';
+                            $('#messages').append(`
+                                <div class="message ${messageClass}" style="display: flex; margin-bottom: 8px; ${messageClass === 'sent' ? 'justify-content: flex-end;' : 'justify-content: flex-start;'}">
+                                    <div class="message-content" style="max-width: 60%; padding: 10px; border-radius: 10px; ${messageClass === 'sent' ? 'background-color: #9a66d1; color: #fff;' : 'background-color: #a688ca; color: #fff;'}">
+                                        <p style="margin: 0; font-size: 0.9em;">${message.message}</p>
+                                        <span class="message-time" style="font-size: 0.75em; color: #9a66d1; display: block; text-align: right; margin-top: 5px;">
+                                            ${new Date(message.created_at).toLocaleTimeString()}
+                                        </span>
+                                    </div>
+                                </div>
+                            `);
+                        });
+
+                        // Scroll to the bottom of the messages div
+                        $('#messages').scrollTop($('#messages')[0].scrollHeight);
+                    }
+                }
             });
-    }
+        }
 
-    function sendMessage() {
-        let message = document.getElementById('message-input').value;
-        let receiverId = /* ضع هنا ID الخاص بالمستخدم المستلم */;
+        // Fetch messages every 2 seconds
+        setInterval(fetchMessages, 2000);
 
-        fetch('/admin/chat/send', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({
-                message: message,
-                receiver_id: receiverId
-            })
-        }).then(() => {
-            document.getElementById('message-input').value = '';
-            loadMessages(receiverId);
+        // Send message via AJAX without reloading the page
+        $('#chat-form').on('submit', function(e) {
+            e.preventDefault();
+
+            const messageContent = $('input[name="message_content"]').val();
+            const receiverId = $('input[name="receiver_id"]').val();
+
+            $.ajax({
+                url: '{{ route('chat.sendMessage') }}',
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    message_content: messageContent,
+                    receiver_id: receiverId,
+                },
+                success: function() {
+                    $('input[name="message_content"]').val('');
+                    fetchMessages(); // Fetch messages again to display the new message
+                }
+            });
         });
-    }
-
-    // استدعاء الدالة لتحميل الرسائل عند فتح الصفحة
-    loadMessages(/* ضع هنا ID الخاص بالإدمن أو المستخدم */);
-</script>
+    </script>
 @endsection

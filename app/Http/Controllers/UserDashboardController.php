@@ -5,26 +5,24 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use App\Models\User;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use App\Models\BillingInformation;
 use App\Models\Order;
-use App\Models\Cart; // استخدام موديل Cart الحالي
-
+use App\Models\Cart;
 
 class UserDashboardController extends Controller
 {
     public function index()
     {
-        // جلب المستخدم الحالي
         $user = Auth::user();
-
-        // جلب بيانات الفواتير للمستخدم الحالي
         $billingInformation = BillingInformation::where('user_id', $user->id)->first();
-
-        // جلب الطلبات للمستخدم الحالي
         $orders = Order::where('user_id', $user->id)->get();
         $cartItems = Cart::where('user_id', $user->id)->get();
 
-        return view('home.userdashboard', compact('user', 'billingInformation', 'orders','cartItems'));}
+        return view('home.userdashboard', compact('user', 'billingInformation', 'orders', 'cartItems'));
+    }
 
     public function updateProfile(Request $request)
     {
@@ -38,42 +36,37 @@ class UserDashboardController extends Controller
             'city' => 'required|string|max:255',
             'country' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
-            'profile_image' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // التحقق من الصورة
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // جلب بيانات الفواتير للمستخدم الحالي
-        $billingInformation = BillingInformation::where('user_id', $user->id)->first();
+        // استخدام المعاملة لتحديث كلا الجدولين معاً
+        DB::transaction(function () use ($user, $request) {
+            // تحديث بيانات الفوترة (Billing Information)
+            BillingInformation::updateOrCreate(
+                ['user_id' => $user->id],
+                $request->only(['first_name', 'last_name', 'address', 'city', 'country', 'phone'])
+            );
 
-        // تحديث بيانات الفواتير
-        if ($billingInformation) {
-            $billingInformation->update($request->all());
-        } else {
-            // إنشاء بيانات الفواتير إذا لم تكن موجودة
-            BillingInformation::create([
-                'user_id' => $user->id,
-                'first_name' => $request->first_name,
-                'last_name' => $request->last_name,
-                'address' => $request->address,
-                'city' => $request->city,
-                'country' => $request->country,
-                'phone' => $request->phone,
-            ]);
-        }
+            // التعامل مع الصورة الشخصية
+            if ($request->hasFile('profile_image')) {
+                // حذف الصورة القديمة إذا كانت موجودة
+                if ($user->profile_image) {
+                    Storage::delete('images/' . $user->profile_image);
+                }
 
-        // إذا كان هناك صورة جديدة
-        if ($request->hasFile('profile_image')) {
-            $image = $request->file('profile_image');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('images'), $imageName);
+                // حفظ الصورة الجديدة
+                $image = $request->file('profile_image');
+                $imageName = time() . '.' . $image->getClientOriginalExtension();
+                $image->storeAs('images', $imageName, 'public');
 
-            // تخزين مسار الصورة في الـ Session
-            Session::put('profile_image', $imageName);
-        }
+                // تحديث حقل الصورة في جدول المستخدمين
+                $user->profile_image = $imageName;
+            }
 
-        return redirect()->back()->with('success', 'Profile updated successfully.');
+            // حفظ تحديثات المستخدم
+            $user->save();
+        });
+
+        return redirect()->back()->with('success', 'تم تحديث الملف الشخصي بنجاح.');
     }
 }
-
-
-
-

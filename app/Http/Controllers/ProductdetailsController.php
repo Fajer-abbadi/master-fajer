@@ -12,20 +12,23 @@ class ProductdetailsController extends Controller
 {
     public function show($id)
     {
-        // جلب المنتج باستخدام الـ ID
+        // جلب المنتج باستخدام الـ ID مع الصور
         $product = Product::with('images')->findOrFail($id);
 
         // جلب المنتجات ذات الصلة بناءً على نفس التصنيف
         $relatedProducts = Product::where('category_id', $product->category_id)
                                   ->where('id', '!=', $product->id)
-                                  ->take(4) // حدد العدد المناسب لعرضه
+                                  ->take(4)
                                   ->get();
 
         // جلب جميع المراجعات
         $allreviews = $product->reviews()->get();
 
-        // تمرير المنتجات ذات الصلة والمراجعات للعرض
-        return view('home.product-details', compact('product', 'relatedProducts', 'allreviews'));
+        // حساب متوسط التقييمات للمنتج
+        $averageRating = $product->reviews()->avg('rating');
+
+        // تمرير المنتجات ذات الصلة، المراجعات، ومتوسط التقييمات للعرض
+        return view('home.product-details', compact('product', 'relatedProducts', 'allreviews', 'averageRating'));
     }
 
     public function addToCart(Request $request)
@@ -74,5 +77,27 @@ class ProductdetailsController extends Controller
     //     ]);
 
     //     return response()->json(['success' => true, 'message' => 'Product added to wishlist']);
-    // }
+    public function addReview(Request $request, $id)
+    {
+        $request->validate([
+            'comment' => 'required|string',
+            'rating' => 'required|integer|min:1|max:5'
+        ]);
+
+        $product = Product::findOrFail($id);
+
+        // Save the review
+        $review = $product->reviews()->create([
+            'user_id' => Auth::id(),
+            'rating' => $request->rating,
+            'comment' => $request->comment,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Review added successfully',
+            'review' => $review
+        ]);
+    }
+
 }

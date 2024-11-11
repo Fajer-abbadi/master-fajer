@@ -13,7 +13,7 @@
                             <div
                                 style="background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(5px); padding: 20px; border-radius: 10px; display: inline-block;">
                                 <h1 style="color: #000;">WOMEN FASHION</h1>
-                                <a style="color: #000;" href="#" class="btn btn-outline-light">Check Collection</a>
+                                <a style="color: #000;" href="{{ route('shop.index') }}" class="btn btn-outline-light">Check Collection</a>
                             </div>
                         </div>
                     </div>
@@ -25,119 +25,68 @@
 
     <!-- Categories Section End -->
 
-    <!-- Product Section Begin -->
-    <section class="product spad">
-        <div class="container">
-            <!-- عناوين الفلترة -->
-            <div class="row">
-                <div class="col-lg-4 col-md-4">
-                    <div class="section-title" style="position: relative;">
-                        <h4 style="font-size: 24px; font-weight: bold; margin-bottom: 10px; position: relative;">
-                            New Products
-                            <span style="content: ''; width: 50px; height: 2px; background-color: red; position: absolute; bottom: -5px; left: 0;"></span>
-                        </h4>
-                    </div>
-                </div>
-                <div class="col-lg-8 col-md-8">
-                    <ul class="filter__controls" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
-                        <!-- رابط لعرض جميع المنتجات -->
-                        <li class="filter-category {{ request('category_id') == '' ? 'active' : '' }}" data-category="" style="list-style: none; font-size: 20px;">
-                            <a href="javascript:void(0)" style="text-decoration: none; color: black; font-weight: 500; position: relative;">All</a>
-                        </li>
-                        <!-- الفئات المتاحة -->
-                        @foreach ($categories as $category)
-                            <li class="filter-category {{ request('category_id') == $category->id ? 'active' : '' }}" data-category="{{ $category->id }}" style="list-style: none; font-size: 15px;">
-                                <a href="javascript:void(0)" style="text-decoration: none; color: black; font-weight: 500; position: relative;">{{ $category->name }}</a>
-                                @if (request('category_id') == $category->id)
-                                    <span style="content: ''; width: 100%; height: 2px; background-color: red; position: absolute; bottom: -5px; left: 0;"></span>
-                                @endif
-                            </li>
-                        @endforeach
-                    </ul>
+   <!-- Product Section Begin -->
+<section class="product spad">
+    <div class="container">
+        <!-- Filter Titles -->
+        <div class="row">
+            <div class="col-lg-4 col-md-4">
+                <div class="section-title" style="position: relative;">
+                    <h4 style="font-size: 24px; font-weight: bold; margin-bottom: 10px; position: relative;">
+                        New Products
+                        <span style="content: ''; width: 50px; height: 2px; background-color: red; position: absolute; bottom: -5px; left: 0;"></span>
+                    </h4>
                 </div>
             </div>
-
-            <!-- المنتجات -->
-            <div class="row property__gallery" id="product-container">
-                @foreach ($products as $product)
-                @foreach ($product->images as $image)
-                @endforeach
-            @endforeach
+            <div class="col-lg-8 col-md-8">
+                <ul class="filter__controls" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
+                    <!-- Link to show all products -->
+                    <li class="filter-category {{ request('category_id') == '' ? 'active' : '' }}" data-category="" style="list-style: none; font-size: 20px;">
+                        <a href="javascript:void(0)" style="text-decoration: none; color: black; font-weight: 500; position: relative;">All</a>
+                    </li>
+                    <!-- Available categories -->
+                    @foreach ($categories as $category)
+                        <li class="filter-category {{ request('category_id') == $category->id ? 'active' : '' }}" data-category="{{ $category->id }}" style="list-style: none; font-size: 15px;">
+                            <a href="javascript:void(0)" style="text-decoration: none; color: black; font-weight: 500; position: relative;">{{ $category->name }}</a>
+                            @if (request('category_id') == $category->id)
+                                <span style="content: ''; width: 100%; height: 2px; background-color: red; position: absolute; bottom: -5px; left: 0;"></span>
+                            @endif
+                        </li>
+                    @endforeach
+                </ul>
             </div>
         </div>
-    </section>
 
+        <!-- Products -->
+        <div class="row property__gallery" id="product-container">
+            @foreach ($products as $product)
+                @foreach ($product->images as $image)
+                    <!-- Placeholder for product display -->
+                @endforeach
+            @endforeach
+        </div>
+    </div>
+</section>
 
-    <script>
-   document.addEventListener('DOMContentLoaded', function() {
-    // عند تحميل الصفحة، جلب جميع المنتجات
-    fetch('/get-products', {
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest' // تحديد أن الطلب هو طلب AJAX
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        var productContainer = document.getElementById('product-container');
-        productContainer.innerHTML = ''; // تفريغ المنتجات الحالية
-
-        // إضافة المنتجات الجديدة
-        data.products.forEach(function(product) {
-            var imageUrl = product.images && product.images.length > 0
-                ? '/storage/image-product/' + product.images[0]  // مسار الصورة من الستوريج
-                : '/img/product/product-1.jpg';  // صورة افتراضية في حالة عدم وجود صور
-
-            var productHTML = `
-                <div class="col-lg-3 col-md-4 col-sm-6 mix ${product.category_name}">
-                    <div class="product__item">
-                        <div class="product__item__pic set-bg" style="background-image: url('${imageUrl}');">
-                            ${product.stock === 0 ? '<div class="label stockout">Out of stock</div>' : '<div class="label new">New</div>'}
-                            <ul class="product__hover">
-                                <li><a href="${imageUrl}" class="image-popup"><span class="arrow_expand"></span></a></li>
-                                <li><a href="#"><span class="icon_heart_alt"></span></a></li>
-                                <li><a href="#"><span class="icon_bag_alt"></span></a></li>
-                            </ul>
-                        </div>
-                        <div class="product__item__text">
-                            <h6><a href="#">${product.name}</a></h6>
-                            <div class="rating">
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star-o"></i>
-                            </div>
-                            <div class="product__price">$${product.price}</div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            productContainer.insertAdjacentHTML('beforeend', productHTML); // إضافة المنتج إلى الـ container
-        });
-    });
-});
-
-document.querySelectorAll('.filter-category').forEach(function(element) {
-    element.addEventListener('click', function() {
-        var category_id = this.getAttribute('data-category');
-
-        // إرسال طلب AJAX للحصول على المنتجات حسب الفئة
-        fetch('/get-products?category_id=' + category_id, {
+<!-- Product Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Fetch all products on page load
+        fetch('/get-products', {
             headers: {
-                'X-Requested-With': 'XMLHttpRequest' // تحديد أن الطلب هو طلب AJAX
+                'X-Requested-With': 'XMLHttpRequest'
             }
         })
         .then(response => response.json())
         .then(data => {
-            // تحديث المنتجات بناءً على البيانات المستلمة
             var productContainer = document.getElementById('product-container');
-            productContainer.innerHTML = ''; // تفريغ المنتجات الحالية
+            productContainer.innerHTML = ''; // Clear existing products
 
-            // إضافة المنتجات الجديدة
+            // Add new products
             data.products.forEach(function(product) {
                 var imageUrl = product.images && product.images.length > 0
-                    ? '/storage/image-product/' + product.images[0]  // مسار الصورة من الستوريج
-                    : '/img/product/product-1.jpg';  // صورة افتراضية في حالة عدم وجود صور
+                    ? '/storage/image-product/' + product.images[0]
+                    : '/img/product/product-1.jpg';
 
                 var productHTML = `
                     <div class="col-lg-3 col-md-4 col-sm-6 mix ${product.category_name}">
@@ -164,12 +113,64 @@ document.querySelectorAll('.filter-category').forEach(function(element) {
                         </div>
                     </div>
                 `;
-                productContainer.insertAdjacentHTML('beforeend', productHTML); // إضافة المنتج إلى الـ container
+                productContainer.insertAdjacentHTML('beforeend', productHTML);
             });
         });
     });
-});
-    </script>
+
+    // Filter products by category
+    document.querySelectorAll('.filter-category').forEach(function(element) {
+        element.addEventListener('click', function() {
+            var category_id = this.getAttribute('data-category');
+
+            fetch('/get-products?category_id=' + category_id, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                var productContainer = document.getElementById('product-container');
+                productContainer.innerHTML = ''; // Clear existing products
+
+                // Add new products
+                data.products.forEach(function(product) {
+                    var imageUrl = product.images && product.images.length > 0
+                        ? '/storage/image-product/' + product.images[0]
+                        : '/img/product/product-1.jpg';
+
+                    var productHTML = `
+                        <div class="col-lg-3 col-md-4 col-sm-6 mix ${product.category_name}">
+                            <div class="product__item">
+                                <div class="product__item__pic set-bg" style="background-image: url('${imageUrl}');">
+                                    ${product.stock === 0 ? '<div class="label stockout">Out of stock</div>' : '<div class="label new">New</div>'}
+                                    <ul class="product__hover">
+                                        <li><a href="${imageUrl}" class="image-popup"><span class="arrow_expand"></span></a></li>
+                                        <li><a href="#"><span class="icon_heart_alt"></span></a></li>
+                                        <li><a href="#"><span class="icon_bag_alt"></span></a></li>
+                                    </ul>
+                                </div>
+                                <div class="product__item__text">
+                                    <h6><a href="#">${product.name}</a></h6>
+                                    <div class="rating">
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star-o"></i>
+                                    </div>
+                                    <div class="product__price">$${product.price}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    productContainer.insertAdjacentHTML('beforeend', productHTML);
+                });
+            });
+        });
+    });
+</script>
+
     <!-- Product Section End -->
 
     <!-- Banner Section Begin -->

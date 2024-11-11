@@ -4,6 +4,9 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\ProductdetailsController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\MessageController;
+use App\Http\Controllers\WishlistController;
+
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\PostController;
@@ -56,6 +59,8 @@ Route::resource('users', UserController::class);
 Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
 
 
+Route::get('/admin/search', [AdminController::class, 'search'])->name('admin.search');
+
 
 // Routes for Categories CRUD
 Route::resource('categories', CategoryController::class);
@@ -64,14 +69,11 @@ Route::resource('categories', CategoryController::class);
 Route::resource('reviews', ReviewController::class);
 
 // Route for chat
-Route::get('/admin/chat', function () {
-    return view('admin.chat');
-})->name('admin.chat');
+// Route::get('/admin/chat', function () {
+//     return view('admin.chat');
+// })->name('admin.chat');
 
-// Route for email
-Route::get('/admin/email', function () {
-    return view('admin.email');
-})->name('admin.email');
+
 // routes/web.php
 Route::resource('coupons', ManageCouponController::class);
 Route::resource('status', ManageStatusController::class);
@@ -84,10 +86,21 @@ Route::prefix('admin')->group(function () {
     Route::put('/blog/{id}', [ManageBlogController::class, 'update'])->name('blog.update'); // تحديث البوست
     Route::delete('/blog/{id}', [ManageBlogController::class, 'destroy'])->name('blog.destroy'); // حذف البوست
 });
+// مسار لتعديل التعليق
+// تعديل التعليق
+Route::get('/posts/{post}/comments/{comment}/edit', [PostController::class, 'editComment'])->name('comments.edit');
 
-Route::get('/admin/chat', [ChatController::class, 'index'])->name('admin.chat'); Route::get('/admin/chat/messages/{user}', [ChatController::class, 'getMessages'])->name('chat.getMessages'); // لجلب الرسائل
+// حذف التعليق
+Route::delete('/posts/{post}/comments/{comment}', [PostController::class, 'deleteComment'])->name('comments.delete');
+Route::put('/comments/{comment}', [PostController::class, 'updateComment'])->name('comments.update');
+Route::put('/posts/{post}/comments/{comment}', [PostController::class, 'updateComment'])->name('comments.update');
+
+Route::post('/posts/{post}/toggle-like', [PostController::class, 'toggleLike'])->name('posts.toggle-like');
+
+
+Route::get('/admin/chat/{receiverId}', [ChatController::class, 'index'])->name('admin.chat');
+ Route::get('/admin/chat/messages/{receiverId}', [ChatController::class, 'getMessages'])->name('chat.getMessages'); // لجلب الرسائل
 Route::post('/admin/chat/send', [ChatController::class, 'sendMessage'])->name('chat.sendMessage'); // لإرسال الرسائل
-
 
 // end route of admin page////////////////////////////////////////////////////////////////////////////////
 
@@ -127,6 +140,7 @@ Route::get('/women-sales', [ProductController::class, 'womenSales'])->name('wome
 
 Route::get('/product-details/{id}', [ProductdetailsController::class, 'show'])->name('product.details');
 
+Route::post('/product/{id}/review', [ProductDetailsController::class, 'addReview'])->name('product.addReview');
 
 Route::get('/login', function () {
     return view('auth.login');
@@ -137,10 +151,10 @@ Route::get('/register', function () {
 })->name('register');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+Route::post('/wishlist/add', [WishlistController::class, 'add'])->name('wishlist.add')->middleware('auth');
+Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+Route::post('/wishlist/remove/{id}', [WishlistController::class, 'remove'])->name('wishlist.remove');
 
-// Route::get('/wishlist', function () {
-//     return view('home.wishlist');
-// });
 Route::post('/check-skin-tone', function (Request $request) {
     // استرجاع لون البشرة المدخل من قبل المستخدم
     $skinTone = $request->input('skin_tone');
@@ -158,9 +172,8 @@ Route::post('/check-skin-tone', function (Request $request) {
 // عرض صفحة تفاصيل المنتج
 Route::get('/product/{id}', [ProductDetailsController::class, 'show'])->name('product.details');
 
-// إضافة منتج للسلة
-// إضافة منتج إلى المفضلة
-// Route::post('/wishlist', [ProductDetailsController::class, 'addToWishlist'])->name('wishlist.add');
+Route::post('/product/{id}/review', [ProductDetailsController::class, 'addReview'])->name('product.addReview');
+
 
 
 });
@@ -198,3 +211,16 @@ Route::resource('posts', PostController::class)->middleware('auth');
 Route::post('/posts/{post}/comment', [PostController::class, 'addComment'])->name('posts.addComment');
 Route::get('/blog/{post}', [PostController::class, 'show'])->name('blog.details');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
+
+Route::get('/order/{id}', [OrderController::class, 'show'])->name('order.details');
+// في ملف web.php
+
+
+// message-route
+Route::middleware('auth')->group(function () {
+    Route::get('/messages/{userId}', [MessageController::class, 'getMessages']);
+    Route::post('/messages/store', [MessageController::class, 'store'])->name('messages.store'); // تأكد من صحة اسم الدالة هنا
+});
+
+Route::post('/messages/store', [MessageController::class, 'store'])->name('messages.store');
+

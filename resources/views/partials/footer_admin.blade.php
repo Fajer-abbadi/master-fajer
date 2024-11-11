@@ -1,4 +1,4 @@
- <!-- Footer -->
+ {{-- <!-- Footer -->
  <footer class="content-footer footer bg-footer-theme">
     <div class="container-xxl">
       <div
@@ -32,4 +32,4 @@
       </div>
     </div>
   </footer>
-  <!-- / Footer -->
+  <!-- / Footer --> --}}

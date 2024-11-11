@@ -115,5 +115,26 @@ public function applyDiscount(Request $request)
 
     return redirect()->route('cart.show')->with('discount_message', 'Coupon applied successfully.');
 }
+public function addToCart(Request $request)
+{
+    // تحقق من تسجيل الدخول
+    if (!Auth::check()) {
+        return response()->json(['success' => false, 'message' => 'You must be logged in to add items to the cart']);
+    }
+
+    // جلب المنتج وإضافته إلى السلة
+    $product = Product::find($request->product_id);
+    if ($product) {
+        Cart::create([
+            'user_id' => Auth::id(),
+            'product_id' => $product->id,
+            'quantity' => $request->quantity ?? 1,
+        ]);
+        return response()->json(['success' => true, 'message' => 'Product added to cart']);
+    }
+
+    return response()->json(['success' => false, 'message' => 'Product not found']);
+}
+
 
 }

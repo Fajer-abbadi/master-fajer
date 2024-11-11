@@ -6,14 +6,18 @@
     <div class="form sign-in">
         <h2>Welcome </h2>
         @if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+        <div class="alert alert-danger" style="background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+            <ul style="list-style-type: none; padding-left: 0; margin: 0;">
+                @foreach ($errors->all() as $error)
+                    <li style="font-size: 0.9em;">
+                        {{ $error === 'بيانات الاعتماد المدخلة غير صحيحة' ? 'The credentials provided are incorrect.' : $error }}
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+
         <form method="POST" action="{{ route('login') }}">
             @csrf
             <label>

@@ -14,6 +14,8 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->enum('role', ['super_admin', 'admin', 'customer', 'user'])->default('user');
+            $table->string('profile_image')->nullable();
+
             $table->timestamps();
         });
     }
