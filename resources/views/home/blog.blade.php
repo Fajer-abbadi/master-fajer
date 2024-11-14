@@ -57,11 +57,11 @@
                                 <li>{{ $post->created_at->format('M d, Y') }}</li>
                             </ul>
                             <!-- أيقونة القلب في المساحة البيضاء -->
-                            <span
+                            {{-- <span
                                 class="like-heart {{ in_array($post->id, session('liked_posts', [])) ? 'active' : '' }}"
                                 onclick="toggleHeart({{ $post->id }}, this)">
                                 &#10084;
-                            </span>
+                            </span> --}}
                         </div>
                     </div>
                 </div>

@@ -63,61 +63,142 @@
                         <div class="product__details__button">
                           <!-- زر السلة مع معرف المنتج -->
                        <!-- زر السلة مع معرف المنتج -->
-<a href="#" class="cart-btn" data-product-id="{{ $product->id }}" style="display: inline-flex; align-items: center; background-color: #CA1515; color: #fff; padding: 10px 20px; border-radius: 5px; text-decoration: none;">
-    <span class="icon_bag_alt" style="margin-right: 8px;"></span> Add to Cart
-</a>
+                       <a href="#" class="cart-btn" data-product-id="{{ $product->id }}" style="display: inline-flex; align-items: center; background-color: #CA1515; color: #fff; padding: 10px 20px; border-radius: 5px; text-decoration: none;">
+                        <span class="icon_bag_alt" style="margin-right: 8px;"></span> Add to Cart
+                    </a>
 
-<!-- جافا سكريبت لإضافة المنتج للسلة باستخدام AJAX -->
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        document.querySelector('.cart-btn').addEventListener('click', function(e) {
-            e.preventDefault();
+                    {{-- <a href="#" class="wishlist-btn" data-product-id="{{ $product->id }}" style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 1px solid #ddd; border-radius: 50%; background-color: #fff; color: #e74c3c; font-size: 18px;">
+                        <span class="icon_heart_alt"></span>
+                    </a> --}}
 
-            let productId = this.getAttribute('data-product-id');
+                    <!-- JavaScript لإضافة المنتج للسلة و للمفضلة باستخدام AJAX -->
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function() {
+                            const cartBtn = document.querySelector('.cart-btn');
+                            const wishlistBtn = document.querySelector('.wishlist-btn');
 
-            fetch(`/cart-add`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({ product_id: productId, quantity: 1 })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // تحديث عدد المنتجات في السلة
-                    let cartCount = document.querySelector('.cart-count');
-                    cartCount.textContent = parseInt(cartCount.textContent) + 1;
+                            // إضافة للسلة
+                            function addToCart(e) {
+                                e.preventDefault();
 
-                    // عرض تنبيه نجاح
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Added to Cart',
-                        text: 'The product has been added to your cart!',
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'There was an issue adding the product to your cart.',
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'An error occurred while adding to cart.',
-                });
-            });
-        });
-    });
+                                // تعطيل الزر لمنع التكرار
+                                cartBtn.removeEventListener('click', addToCart);
+                                cartBtn.disabled = true;
 
-</script>
+                                let productId = cartBtn.getAttribute('data-product-id');
+
+                                // تحقق من حالة تسجيل الدخول أولاً
+                                fetch('/check-auth')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (!data.isAuthenticated) {
+                                            // إذا لم يكن مسجل الدخول، توجه إلى صفحة تسجيل الدخول
+                                            window.location.href = "{{ route('login') }}";
+                                        } else {
+                                            // إضافة المنتج للسلة إذا كان المستخدم مسجل الدخول
+                                            fetch(`/cart-add`, {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                                },
+                                                body: JSON.stringify({ product_id: productId, quantity: 1 })
+                                            })
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                if (data.success) {
+                                                    // تحديث عدد المنتجات في السلة
+                                                    let cartCount = document.querySelector('.cart-count');
+                                                    cartCount.textContent = parseInt(cartCount.textContent) + 1;
+
+                                                    // عرض تنبيه نجاح
+                                                    Swal.fire({
+                                                        icon: 'success',
+                                                        title: 'Added to Cart',
+                                                        text: 'The product has been added to your cart!',
+                                                        showConfirmButton: false,
+                                                        timer: 1500
+                                                    });
+                                                } else {
+                                                    Swal.fire({
+                                                        icon: 'error',
+                                                        title: 'Error',
+                                                        text: 'There was an issue adding the product to your cart.',
+                                                    });
+                                                }
+                                            })
+                                            .catch(error => {
+                                                console.error('Error:', error);
+                                                Swal.fire({
+                                                    icon: 'error',
+                                                    title: 'Error',
+                                                    text: 'An error occurred while adding to cart.',
+                                                });
+                                            })
+                                            .finally(() => {
+                                                // إعادة تفعيل الزر وإعادة إضافة مستمع الحدث
+                                                cartBtn.addEventListener('click', addToCart);
+                                                cartBtn.disabled = false;
+                                            });
+                                        }
+                                    })
+                                    .catch(error => console.error('Error:', error));
+                            }
+
+                            cartBtn.addEventListener('click', addToCart);
+
+                            // إضافة للمفضلة
+                            wishlistBtn.addEventListener('click', function(e) {
+                                e.preventDefault();
+
+                                let productId = this.getAttribute('data-product-id');
+
+                                fetch(`/wishlist/add`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                    },
+                                    body: JSON.stringify({ product_id: productId })
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        // عرض تنبيه نجاح
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Added to Wishlist',
+                                            text: 'The product has been added to your wishlist!',
+                                            showConfirmButton: false,
+                                            timer: 1500
+                                        });
+                                    } else if (data.message === 'already_exists') {
+                                        Swal.fire({
+                                            icon: 'info',
+                                            title: 'Already Added',
+                                            text: 'This product is already in your wishlist.',
+                                            showConfirmButton: false,
+                                            timer: 1500
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error',
+                                            text: 'There was an issue adding the product to your wishlist.',
+                                        });
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: 'An error occurred while adding to wishlist.',
+                                    });
+                                });
+                            });
+                        });
+                    </script>
 
 
                             <ul>
@@ -404,7 +485,7 @@
                                                 newReview.innerHTML = `
                                                     <div class="th-post-comment">
                                                         <div class="comment-content">
-                                                            <h4 class="name">{{ Auth::user()->name }}</h4>
+<h4 class="name">{{ Auth::check() ? Auth::user()->name : 'Guest' }}</h4>
                                                             <span class="commented-on"><i class="fa fa-clock"></i> ${new Date().toLocaleString()}</span>
                                                             <br>
                                                             <span class="list-rating" style="color : #E2B93B;">

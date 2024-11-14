@@ -13,7 +13,8 @@
                             <div
                                 style="background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(5px); padding: 20px; border-radius: 10px; display: inline-block;">
                                 <h1 style="color: #000;">WOMEN FASHION</h1>
-                                <a style="color: #000;" href="{{ route('shop.index') }}" class="btn btn-outline-light">Check Collection</a>
+                                <a style="color: #000;" href="{{ route('shop.index') }}" class="btn btn-outline-light">Check
+                                    Collection</a>
                             </div>
                         </div>
                     </div>
@@ -25,130 +26,132 @@
 
     <!-- Categories Section End -->
 
-   <!-- Product Section Begin -->
-<section class="product spad">
-    <div class="container">
-        <!-- Filter Titles -->
-        <div class="row">
-            <div class="col-lg-4 col-md-4">
-                <div class="section-title" style="position: relative;">
-                    <h4 style="font-size: 24px; font-weight: bold; margin-bottom: 10px; position: relative;">
-                        New Products
-                        <span style="content: ''; width: 50px; height: 2px; background-color: red; position: absolute; bottom: -5px; left: 0;"></span>
-                    </h4>
+    <!-- Product Section Begin -->
+    <section class="product spad">
+        <div class="container">
+            <!-- Filter Titles -->
+            <div class="row">
+                <div class="col-lg-4 col-md-4">
+                    <div class="section-title" style="position: relative;">
+                        <h4 style="font-size: 24px; font-weight: bold; margin-bottom: 10px; position: relative;">
+                            New Products
+                            <span
+                                style="content: ''; width: 50px; height: 2px; background-color: red; position: absolute; bottom: -5px; left: 0;"></span>
+                        </h4>
+                    </div>
+                </div>
+                <div class="col-lg-8 col-md-8">
+                    <ul class="filter__controls" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
+                        <!-- Link to show all products -->
+                        <li class="filter-category {{ request('category_id') == '' ? 'active' : '' }}" data-category=""
+                            style="list-style: none; font-size: 20px;">
+                            <a href="javascript:void(0)"
+                                style="text-decoration: none; color: black; font-weight: 500; position: relative;">All</a>
+                        </li>
+                        <!-- Available categories -->
+                        @foreach ($categories as $category)
+                            <li class="filter-category {{ request('category_id') == $category->id ? 'active' : '' }}"
+                                data-category="{{ $category->id }}" style="list-style: none; font-size: 15px;">
+                                <a href="javascript:void(0)"
+                                    style="text-decoration: none; color: black; font-weight: 500; position: relative;">{{ $category->name }}</a>
+                                @if (request('category_id') == $category->id)
+                                    <span
+                                        style="content: ''; width: 100%; height: 2px; background-color: red; position: absolute; bottom: -5px; left: 0;"></span>
+                                @endif
+                            </li>
+                        @endforeach
+                    </ul>
                 </div>
             </div>
-            <div class="col-lg-8 col-md-8">
-                <ul class="filter__controls" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
-                    <!-- Link to show all products -->
-                    <li class="filter-category {{ request('category_id') == '' ? 'active' : '' }}" data-category="" style="list-style: none; font-size: 20px;">
-                        <a href="javascript:void(0)" style="text-decoration: none; color: black; font-weight: 500; position: relative;">All</a>
-                    </li>
-                    <!-- Available categories -->
-                    @foreach ($categories as $category)
-                        <li class="filter-category {{ request('category_id') == $category->id ? 'active' : '' }}" data-category="{{ $category->id }}" style="list-style: none; font-size: 15px;">
-                            <a href="javascript:void(0)" style="text-decoration: none; color: black; font-weight: 500; position: relative;">{{ $category->name }}</a>
-                            @if (request('category_id') == $category->id)
-                                <span style="content: ''; width: 100%; height: 2px; background-color: red; position: absolute; bottom: -5px; left: 0;"></span>
-                            @endif
-                        </li>
+
+            <!-- Products -->
+            <div class="row property__gallery" id="product-container">
+                @foreach ($products as $product)
+                    @foreach ($product->images as $image)
+                        <!-- Placeholder for product display -->
                     @endforeach
-                </ul>
+                @endforeach
             </div>
         </div>
+    </section>
 
-        <!-- Products -->
-        <div class="row property__gallery" id="product-container">
-            @foreach ($products as $product)
-                @foreach ($product->images as $image)
-                    <!-- Placeholder for product display -->
-                @endforeach
-            @endforeach
-        </div>
-    </div>
-</section>
+    <!-- Product Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fetch all products on page load
+            fetch('/get-products', {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    var productContainer = document.getElementById('product-container');
+                    productContainer.innerHTML = ''; // Clear existing products
 
-<!-- Product Script -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Fetch all products on page load
-        fetch('/get-products', {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            var productContainer = document.getElementById('product-container');
-            productContainer.innerHTML = ''; // Clear existing products
+                    // Add new products
+                    data.products.forEach(function(product) {
+                        var imageUrl = product.images && product.images.length > 0 ?
+                            '/storage/image-product/' + product.images[0] :
+                            '/img/product/product-1.jpg';
 
-            // Add new products
-            data.products.forEach(function(product) {
-                var imageUrl = product.images && product.images.length > 0
-                    ? '/storage/image-product/' + product.images[0]
-                    : '/img/product/product-1.jpg';
-
-                var productHTML = `
+                        var ratingStars = '';
+                        for (var i = 1; i <= 5; i++) {
+                            if (i <= product.averageRating) {
+                                ratingStars +=
+                                    '<i class="fa fa-star" style="color: #FFD700;margin-left:4px;"></i>'; // Filled star in gold
+                            } else {
+                                ratingStars +=
+                                    '<i class="fa fa-star" style="color: #ccc;margin-left:4px;"></i>'; // Empty star in grey
+                            }
+                        }
+                        var productHTML = `
                     <div class="col-lg-3 col-md-4 col-sm-6 mix ${product.category_name}">
                         <div class="product__item">
                             <div class="product__item__pic set-bg" style="background-image: url('${imageUrl}');">
-                                ${product.stock === 0 ? '<div class="label stockout">Out of stock</div>' : '<div class="label new">New</div>'}
-                                <ul class="product__hover">
-                                    <li><a href="${imageUrl}" class="image-popup"><span class="arrow_expand"></span></a></li>
-                                    <li><a href="#"><span style:"padding-top:1vh" class="icon_heart_alt"></span></a></li>
-                                    <li><a href="#"><span class="icon_bag_alt"></span></a></li>
-                                </ul>
+
                             </div>
                             <div class="product__item__text">
-                                <h6><a href="#">${product.name}</a></h6>
-                                <div class="rating">
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star-o"></i>
+                                <h6><a href="${product.productUrl}">${product.name}</a></h6>
+                                <div class="rating" >
+                                    ${ratingStars} <!-- Rendered rating stars -->
                                 </div>
                                 <div class="product__price">$${product.price}</div>
                             </div>
                         </div>
                     </div>
                 `;
-                productContainer.insertAdjacentHTML('beforeend', productHTML);
-            });
+                        productContainer.insertAdjacentHTML('beforeend', productHTML);
+                    });
+                });
         });
-    });
 
-    // Filter products by category
-    document.querySelectorAll('.filter-category').forEach(function(element) {
-        element.addEventListener('click', function() {
-            var category_id = this.getAttribute('data-category');
+        // Filter products by category
+        document.querySelectorAll('.filter-category').forEach(function(element) {
+            element.addEventListener('click', function() {
+                var category_id = this.getAttribute('data-category');
 
-            fetch('/get-products?category_id=' + category_id, {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                var productContainer = document.getElementById('product-container');
-                productContainer.innerHTML = ''; // Clear existing products
+                fetch('/get-products?category_id=' + category_id, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        var productContainer = document.getElementById('product-container');
+                        productContainer.innerHTML = ''; // Clear existing products
 
-                // Add new products
-                data.products.forEach(function(product) {
-                    var imageUrl = product.images && product.images.length > 0
-                        ? '/storage/image-product/' + product.images[0]
-                        : '/img/product/product-1.jpg';
+                        // Add new products
+                        data.products.forEach(function(product) {
+                            var imageUrl = product.images && product.images.length > 0 ?
+                                '/storage/image-product/' + product.images[0] :
+                                '/img/product/product-1.jpg';
 
-                    var productHTML = `
+                            var productHTML = `
                         <div class="col-lg-3 col-md-4 col-sm-6 mix ${product.category_name}">
                             <div class="product__item">
                                 <div class="product__item__pic set-bg" style="background-image: url('${imageUrl}');">
-                                    ${product.stock === 0 ? '<div class="label stockout">Out of stock</div>' : '<div class="label new">New</div>'}
-                                    <ul class="product__hover">
-                                        <li><a href="${imageUrl}" class="image-popup"><span class="arrow_expand"></span></a></li>
-                                        <li><a href="#"><span class="icon_heart_alt"></span></a></li>
-                                        <li><a href="#"><span class="icon_bag_alt"></span></a></li>
-                                    </ul>
+
                                 </div>
                                 <div class="product__item__text">
                                     <h6><a href="#">${product.name}</a></h6>
@@ -164,12 +167,12 @@
                             </div>
                         </div>
                     `;
-                    productContainer.insertAdjacentHTML('beforeend', productHTML);
-                });
+                            productContainer.insertAdjacentHTML('beforeend', productHTML);
+                        });
+                    });
             });
         });
-    });
-</script>
+    </script>
 
     <!-- Product Section End -->
 
@@ -238,57 +241,66 @@
     </script>
 
     <style>
-       /* تعديل حجم الصورة لتقليل الارتفاع */
-.banner-image img {
-    width: 100%;
-    max-height: 500px; /* تحديد الحد الأقصى للارتفاع */
-    object-fit: cover;
-    border-radius: 15px;
-}
+        /* تعديل حجم الصورة لتقليل الارتفاع */
+        .banner-image img {
+            width: 100%;
+            max-height: 500px;
+            /* تحديد الحد الأقصى للارتفاع */
+            object-fit: cover;
+            border-radius: 15px;
+        }
 
-/* تعديل ارتفاع الفورم */
-.skin-tone-test-section {
-    background: #ffffff;
-    padding: 40px 20px; /* تقليل الحشو الداخلي */
-    border-radius: 20px;
-    box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
+        /* تعديل ارتفاع الفورم */
+        .skin-tone-test-section {
+            background: #ffffff;
+            padding: 40px 20px;
+            /* تقليل الحشو الداخلي */
+            border-radius: 20px;
+            box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
 
-/* تقليل المسافات بين العناصر */
-.section-header .title {
-    font-size: 28px; /* تصغير حجم العنوان */
-    margin-bottom: 10px; /* تقليل المسافة تحت العنوان */
-}
+        /* تقليل المسافات بين العناصر */
+        .section-header .title {
+            font-size: 28px;
+            /* تصغير حجم العنوان */
+            margin-bottom: 10px;
+            /* تقليل المسافة تحت العنوان */
+        }
 
-.section-header .subtitle {
-    font-size: 16px;
-    margin-bottom: 20px;
-}
+        .section-header .subtitle {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
 
-/* تعديل الفورم */
-.skin-tone-select {
-    padding: 8px; /* تقليل الحشو الداخلي */
-    margin-bottom: 15px; /* تقليل المسافة بين الحقول */
-}
+        /* تعديل الفورم */
+        .skin-tone-select {
+            padding: 8px;
+            /* تقليل الحشو الداخلي */
+            margin-bottom: 15px;
+            /* تقليل المسافة بين الحقول */
+        }
 
-.btn-check {
-    background-color: #C40206;
-    color: #fff;
-    padding: 12px 30px; /* إعادة الحشو الداخلي الأكبر */
-    border-radius: 30px; /* إعادة الحواف الدائرية */
-    font-size: 18px; /* إعادة حجم النص */
-    font-weight: 600;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease; /* إضافة تأثير الانتقال */
-}
+        .btn-check {
+            background-color: #C40206;
+            color: #fff;
+            padding: 12px 30px;
+            /* إعادة الحشو الداخلي الأكبر */
+            border-radius: 30px;
+            /* إعادة الحواف الدائرية */
+            font-size: 18px;
+            /* إعادة حجم النص */
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            /* إضافة تأثير الانتقال */
+        }
 
-.btn-check:hover {
-    background-color: #A10205; /* تغيير لون الخلفية عند التمرير */
-}
-
-
+        .btn-check:hover {
+            background-color: #A10205;
+            /* تغيير لون الخلفية عند التمرير */
+        }
     </style>
 
 
@@ -299,44 +311,46 @@
     </div>
     </section>
     <!-- Banner Section End -->
-<br><br><br>
+    <br><br><br>
     <!-- Trend Section Begin -->
     <section class="trend spad">
 
         <div class="slideshow-wrapper">
             <div class="slideshow-container">
-                @foreach($hotProducts as $product)
-                <div class="slide">
-                    <img src="{{ asset('storage/image-product/' . $product->images->first()->image_url) }}" alt="{{ $product->name }}">
-                    <h4>{{ $product->name }}</h4>
-                    <p>{{ $product->description }}</p>
-                    <div class="product__price">
-                        @if($product->discount_price)
-                            <span class="original-price">${{ $product->price }}</span> <!-- السعر قبل الخصم -->
-                            ${{ $product->discount_price }} <!-- السعر بعد الخصم -->
-                        @else
-                            ${{ $product->price }} <!-- عرض السعر فقط إذا لم يكن هناك خصم -->
-                        @endif
-                    </div>
+                @foreach ($hotProducts as $product)
+                    <div class="slide">
+                        <img src="{{ asset('storage/image-product/' . $product->images->first()->image_url) }}"
+                            alt="{{ $product->name }}">
+                        <h4>{{ $product->name }}</h4>
+                        <p>{{ $product->description }}</p>
+                        <div class="product__price">
+                            @if ($product->discount_price)
+                                <span class="original-price">${{ $product->price }}</span> <!-- السعر قبل الخصم -->
+                                ${{ $product->discount_price }} <!-- السعر بعد الخصم -->
+                            @else
+                                ${{ $product->price }} <!-- عرض السعر فقط إذا لم يكن هناك خصم -->
+                            @endif
+                        </div>
 
-                </div>
+                    </div>
                 @endforeach
 
-                @foreach($hotProducts as $product)
-                <div class="slide">
-                    <img src="{{ asset('storage/image-product/' . $product->images->first()->image_url) }}" alt="{{ $product->name }}">
-                    <h4>{{ $product->name }}</h4>
-                    <p>{{ $product->description }}</p>
-                    <div class="product__price">
-                        @if($product->discount_price)
-                            <span class="original-price">${{ $product->price }}</span> <!-- السعر قبل الخصم -->
-                            ${{ $product->discount_price }} <!-- السعر بعد الخصم -->
-                        @else
-                            ${{ $product->price }} <!-- عرض السعر فقط إذا لم يكن هناك خصم -->
-                        @endif
-                    </div>
+                @foreach ($hotProducts as $product)
+                    <div class="slide">
+                        <img src="{{ asset('storage/image-product/' . $product->images->first()->image_url) }}"
+                            alt="{{ $product->name }}">
+                        <h4>{{ $product->name }}</h4>
+                        <p>{{ $product->description }}</p>
+                        <div class="product__price">
+                            @if ($product->discount_price)
+                                <span class="original-price">${{ $product->price }}</span> <!-- السعر قبل الخصم -->
+                                ${{ $product->discount_price }} <!-- السعر بعد الخصم -->
+                            @else
+                                ${{ $product->price }} <!-- عرض السعر فقط إذا لم يكن هناك خصم -->
+                            @endif
+                        </div>
 
-                </div>
+                    </div>
                 @endforeach
             </div>
         </div>
@@ -346,96 +360,99 @@
 
 
 
-<style>
+        <style>
+            .trend {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                background-color: #F4F4F4;
+            }
 
 
-  .trend {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #F4F4F4;
-}
+            .slideshow-wrapper {
+                overflow: hidden;
+                width: 100%;
+                display: flex;
+                align-items: center;
+                position: relative;
+            }
 
+            .slideshow-container {
+                display: flex;
+                animation: slide 20s linear infinite;
+                width: calc(200%);
+                /* عرض السلايدر ضعف العرض الأساسي */
+            }
 
-.slideshow-wrapper {
-    overflow: hidden;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    position: relative;
-}
+            @keyframes slide {
+                0% {
+                    transform: translateX(0%);
+                }
 
-.slideshow-container {
-    display: flex;
-    animation: slide 20s linear infinite;
-    width: calc(200%); /* عرض السلايدر ضعف العرض الأساسي */
-}
+                100% {
+                    transform: translateX(-50%);
+                    /* نتحرك لنصف العرض */
+                }
+            }
 
-@keyframes slide {
-    0% {
-        transform: translateX(0%);
-    }
-    100% {
-        transform: translateX(-50%); /* نتحرك لنصف العرض */
-    }
-}
+            .slide {
+                flex: 0 0 33.33%;
+                /* ثلاث منتجات معاً */
+                box-sizing: border-box;
+                margin-right: 10px;
+                text-align: center;
+            }
 
-.slide {
-    flex: 0 0 33.33%; /* ثلاث منتجات معاً */
-    box-sizing: border-box;
-    margin-right: 10px;
-    text-align: center;
-}
+            .slide img {
+                width: 100%;
+                height: auto;
+                max-height: 500px;
+                object-fit: cover;
+            }
 
-.slide img {
-    width: 100%;
-    height: auto;
-    max-height: 500px;
-    object-fit: cover;
-}
-.price {
-    margin-top: 10px;
-}
+            .price {
+                margin-top: 10px;
+            }
 
-.old-price {
-    text-decoration: line-through;
-    color: #999;
-    margin-right: 10px;
-}
+            .old-price {
+                text-decoration: line-through;
+                color: #999;
+                margin-right: 10px;
+            }
 
-.new-price {
-    color: #e74c3c; /* لون السعر المخفض */
-    font-weight: bold;
-}
+            .new-price {
+                color: #e74c3c;
+                /* لون السعر المخفض */
+                font-weight: bold;
+            }
 
-.original-price {
-    text-decoration: line-through; /* شطب السعر */
-    color: red; /* لون مختلف */
-}
+            .original-price {
+                text-decoration: line-through;
+                /* شطب السعر */
+                color: red;
+                /* لون مختلف */
+            }
+        </style>
+        <script>
+            let currentIndex = 0;
+            const slides = document.querySelectorAll('.slide');
+            const totalSlides = slides.length;
 
+            function showNextSlide() {
+                currentIndex = (currentIndex + 1) % totalSlides;
+                slides.forEach((slide, index) => {
+                    slide.style.transform = `translateX(-${currentIndex * 100}%)`;
+                });
+            }
 
-</style>
-<script>
-    let currentIndex = 0;
-const slides = document.querySelectorAll('.slide');
-const totalSlides = slides.length;
-
-function showNextSlide() {
-    currentIndex = (currentIndex + 1) % totalSlides;
-    slides.forEach((slide, index) => {
-        slide.style.transform = `translateX(-${currentIndex * 100}%)`;
-    });
-}
-
-// تحريك السلايدر كل 3 ثوانٍ
-setInterval(showNextSlide, 3000);
-
-</script>
+            // تحريك السلايدر كل 3 ثوانٍ
+            setInterval(showNextSlide, 3000);
+        </script>
     </section>
 
     <!-- Trend Section End -->
-<br><br><br>
+    <br><br><br>
     <!-- Discount Section Begin -->
     <section class="discount">
         <div class="container">
@@ -472,7 +489,7 @@ setInterval(showNextSlide, 3000);
                                         <p>Sec</p>
                                     </div>
                                 </div>
-                                <a href="#">Shop now</a>
+                                <a href="{{ route('women.sales') }}">Shop now</a>
                             </div>
                         </div>
                     </div>
@@ -480,130 +497,130 @@ setInterval(showNextSlide, 3000);
             </section>
 
             <script>
-            // إعداد وقت النهاية ليكون بعد 7 أيام من الآن
-            const countdownDate = new Date().getTime() + (7 * 24 * 60 * 60 * 1000); // 7 أيام من الآن
+                // إعداد وقت النهاية ليكون بعد 7 أيام من الآن
+                const countdownDate = new Date().getTime() + (7 * 24 * 60 * 60 * 1000); // 7 أيام من الآن
 
-            // دالة العد التنازلي
-            const countdownInterval = setInterval(function() {
-                // الحصول على الوقت الحالي
-                const now = new Date().getTime();
-                // حساب الفرق بين الوقت الحالي ووقت النهاية
-                const timeLeft = countdownDate - now;
+                // دالة العد التنازلي
+                const countdownInterval = setInterval(function() {
+                    // الحصول على الوقت الحالي
+                    const now = new Date().getTime();
+                    // حساب الفرق بين الوقت الحالي ووقت النهاية
+                    const timeLeft = countdownDate - now;
 
-                // حساب الأيام، الساعات، الدقائق، والثواني المتبقية
-                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                    // حساب الأيام، الساعات، الدقائق، والثواني المتبقية
+                    const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-                // عرض القيم في العناصر المحددة
-                document.getElementById("days").innerHTML = days;
-                document.getElementById("hours").innerHTML = hours;
-                document.getElementById("minutes").innerHTML = minutes;
-                document.getElementById("seconds").innerHTML = seconds;
+                    // عرض القيم في العناصر المحددة
+                    document.getElementById("days").innerHTML = days;
+                    document.getElementById("hours").innerHTML = hours;
+                    document.getElementById("minutes").innerHTML = minutes;
+                    document.getElementById("seconds").innerHTML = seconds;
 
-                // إنهاء العد التنازلي إذا انتهى الوقت
-                if (timeLeft < 0) {
-                    clearInterval(countdownInterval);
-                    document.getElementById("countdown-time").innerHTML = "EXPIRED";
-                }
-            }, 1000);
+                    // إنهاء العد التنازلي إذا انتهى الوقت
+                    if (timeLeft < 0) {
+                        clearInterval(countdownInterval);
+                        document.getElementById("countdown-time").innerHTML = "EXPIRED";
+                    }
+                }, 1000);
             </script>
 
 
-    <!-- Discount Section End -->
+            <!-- Discount Section End -->
 
-    <!-- Services Section Begin -->
-    <section class="services spad">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-3 col-md-4 col-sm-6">
-                    <div class="services__item">
-                        <i class="fa fa-car"></i>
-                        <h6>Free Shipping</h6>
-                        <p>For all oder over $99</p>
+            <!-- Services Section Begin -->
+            <section class="services spad">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-4 col-sm-6">
+                            <div class="services__item">
+                                <i class="fa fa-car"></i>
+                                <h6>Free Shipping</h6>
+                                <p>For all oder over $99</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-6">
+                            <div class="services__item">
+                                <i class="fa fa-money"></i>
+                                <h6>Money Back Guarantee</h6>
+                                <p>If good have </p>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-6">
+                            <div class="services__item">
+                                <i class="fa fa-support"></i>
+                                <h6>Online Support 24/7</h6>
+                                <p>Dedicated support</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-6">
+                            <div class="services__item">
+                                <i class="fa fa-headphones"></i>
+                                <h6>Payment Secure</h6>
+                                <p>100% secure payment</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-4 col-sm-6">
-                    <div class="services__item">
-                        <i class="fa fa-money"></i>
-                        <h6>Money Back Guarantee</h6>
-                        <p>If good have   </p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-4 col-sm-6">
-                    <div class="services__item">
-                        <i class="fa fa-support"></i>
-                        <h6>Online Support 24/7</h6>
-                        <p>Dedicated support</p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-4 col-sm-6">
-                    <div class="services__item">
-                        <i class="fa fa-headphones"></i>
-                        <h6>Payment Secure</h6>
-                        <p>100% secure payment</p>
+            </section>
+            <!-- Services Section End -->
+
+            <!-- Instagram Begin -->
+            <div class="instagram">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-lg-2 col-md-4 col-sm-4 p-0">
+                            <div class="instagram__item set-bg" data-setbg="img/instagram/insta-1.jpeg">
+                                <div class="instagram__text">
+                                    <i class="fa fa-instagram"></i>
+                                    <a href="https://www.instagram.com/favittoria_23?igsh=MXY2Zms1ODk1dzFiOQ%3D%3D&utm_source=qr">@ Favittoria_shop</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-4 p-0">
+                            <div class="instagram__item set-bg" data-setbg="img/instagram/insta-2.jpeg">
+                                <div class="instagram__text">
+                                    <i class="fa fa-instagram"></i>
+                                    <a href="https://www.instagram.com/favittoria_23?igsh=MXY2Zms1ODk1dzFiOQ%3D%3D&utm_source=qr">@ Favittoria_shop</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-4 p-0">
+                            <div class="instagram__item set-bg" data-setbg="img/instagram/insta-3.jpg">
+                                <div class="instagram__text">
+                                    <i class="fa fa-instagram"></i>
+                                    <a href="https://www.instagram.com/favittoria_23?igsh=MXY2Zms1ODk1dzFiOQ%3D%3D&utm_source=qr">@ Favittoria_shop</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-4 p-0">
+                            <div class="instagram__item set-bg" data-setbg="img/instagram/insta-4.jpg">
+                                <div class="instagram__text">
+                                    <i class="fa fa-instagram"></i>
+                                    <a href="https://www.instagram.com/favittoria_23?igsh=MXY2Zms1ODk1dzFiOQ%3D%3D&utm_source=qr">@ Favittoria_shop</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-4 p-0">
+                            <div class="instagram__item set-bg" data-setbg="img/instagram/insta-5.jpg">
+                                <div class="instagram__text">
+                                    <i class="fa fa-instagram"></i>
+                                    <a href="https://www.instagram.com/favittoria_23?igsh=MXY2Zms1ODk1dzFiOQ%3D%3D&utm_source=qr">@ Favittoria_shop</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-4 p-0">
+                            <div class="instagram__item set-bg" data-setbg="img/instagram/insta-6.jpg">
+                                <div class="instagram__text">
+                                    <i class="fa fa-instagram"></i>
+                                    <a href="https://www.instagram.com/favittoria_23?igsh=MXY2Zms1ODk1dzFiOQ%3D%3D&utm_source=qr">@ Favittoria_shop</a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
-    <!-- Services Section End -->
-
-    <!-- Instagram Begin -->
-    <div class="instagram">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-lg-2 col-md-4 col-sm-4 p-0">
-                    <div class="instagram__item set-bg" data-setbg="img/instagram/insta-1.jpeg">
-                        <div class="instagram__text">
-                            <i class="fa fa-instagram"></i>
-                            <a href="#">@ Favittoria_shop</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-2 col-md-4 col-sm-4 p-0">
-                    <div class="instagram__item set-bg" data-setbg="img/instagram/insta-2.jpeg">
-                        <div class="instagram__text">
-                            <i class="fa fa-instagram"></i>
-                            <a href="#">@ Favittoria_shop</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-2 col-md-4 col-sm-4 p-0">
-                    <div class="instagram__item set-bg" data-setbg="img/instagram/insta-3.jpg">
-                        <div class="instagram__text">
-                            <i class="fa fa-instagram"></i>
-                            <a href="#">@ Favittoria_shop</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-2 col-md-4 col-sm-4 p-0">
-                    <div class="instagram__item set-bg" data-setbg="img/instagram/insta-4.jpg">
-                        <div class="instagram__text">
-                            <i class="fa fa-instagram"></i>
-                            <a href="#">@ Favittoria_shop</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-2 col-md-4 col-sm-4 p-0">
-                    <div class="instagram__item set-bg" data-setbg="img/instagram/insta-5.jpg">
-                        <div class="instagram__text">
-                            <i class="fa fa-instagram"></i>
-                            <a href="#">@ Favittoria_shop</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-2 col-md-4 col-sm-4 p-0">
-                    <div class="instagram__item set-bg" data-setbg="img/instagram/insta-6.jpg">
-                        <div class="instagram__text">
-                            <i class="fa fa-instagram"></i>
-                            <a href="#">@ Favittoria_shop</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Instagram End -->
-@stop
+            <!-- Instagram End -->
+        @stop

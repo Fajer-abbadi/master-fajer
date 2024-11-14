@@ -110,7 +110,7 @@ class ImagesTableSeeder extends Seeder
 
         Image::create([
             'product_id' => 21,
-            'image_url' => 'stra.jpg',
+            'image_url' => 'neck1.jpg',
         ]);
 
         Image::create([

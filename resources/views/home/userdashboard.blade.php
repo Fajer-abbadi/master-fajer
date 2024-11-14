@@ -176,6 +176,26 @@
                     const chatMessagesDiv = document.getElementById('chatMessages');
                     chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
                 }
+                let lastMessageId = 0; // تخزين آخر رسالة تم تحميلها
+
+function loadNewMessages() {
+    fetch(`{{ route('messages.new') }}?lastMessageId=${lastMessageId}`)
+        .then(response => response.json())
+        .then(messages => {
+            messages.forEach(message => {
+                const sender = message.sender_id === {{ Auth::id() }} ? 'user' : 'admin';
+                addMessage(message.message, sender);
+                lastMessageId = message.id; // تحديث آخر رسالة
+            });
+        })
+        .catch(error => {
+            console.error('Error loading new messages:', error);
+        });
+}
+
+// تحديث الرسائل كل 5 ثوانٍ
+setInterval(loadNewMessages, 5000);
+
 
                 function sendMessage() {
     const messageInput = document.getElementById('messageInput');

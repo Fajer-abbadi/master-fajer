@@ -153,7 +153,7 @@
                                                             <button type="submit">Delete</button>
                                                         </form>
                                                     @endif
-                                                    <span class="reaction heart" onclick="toggleHeart(this)">&#10084;</span>
+                                                    {{-- <span class="reaction heart" onclick="toggleHeart(this)">&#10084;</span> --}}
                                                 </div>
                                             </div>
                                             <!-- Displayed Comment Text -->

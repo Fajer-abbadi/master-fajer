@@ -108,8 +108,10 @@
                 <div class="header__right" style="display: flex; align-items: center; justify-content: flex-end;">
                     <div class="header__right__auth" style="margin-right: 20px;">
                         @if(Auth::check())
-                            <a href="{{ route('user.dashboard') }}" style="text-decoration: none; color: rgb(140, 133, 133); font-size: 16px; margin-right: 10px;">Account</a>
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: inline;">
+                        <a href="{{ route('user.dashboard') }}" style="text-decoration: none; color: rgb(140, 133, 133); font-size: 16px; margin-right: 10px;">
+                            <i class="fa fa-user" aria-hidden="true"></i>
+                        </a>
+                                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: inline;">
                                 @csrf
                                 <button type="submit" style="background-color: transparent; border: none; color: rgb(140, 133, 133); font-size: 16px; cursor: pointer;">Logout</button>
                             </form>

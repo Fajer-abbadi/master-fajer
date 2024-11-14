@@ -50,22 +50,23 @@
         </ul>
     </div>
 @endif
-            <form method="POST" action="{{ route('register') }}">
-                @csrf
-                <label>
-                    <span>Name</span>
-                    <input type="text" name="name" value="{{ old('name') }}" required />
-                </label>
-                <label>
-                    <span>Email</span>
-                    <input type="email" name="email" value="{{ old('email') }}" required />
-                </label>
-                <label>
-                    <span>Password</span>
-                    <input type="password" name="password" required />
-                </label>
-                <button type="submit" class="submit">Sign Up</button>
-            </form>
+<form method="POST" action="{{ route('register') }}">
+    @csrf
+    <label>
+        <span>Name</span>
+        <input type="text" name="name" value="{{ old('name') }}" required maxlength="255" />
+    </label>
+    <label>
+        <span>Email</span>
+        <input type="email" name="email" value="{{ old('email') }}" required />
+    </label>
+    <label>
+        <span>Password</span>
+        <input type="password" name="password" required minlength="6" />
+    </label>
+    <button type="submit" class="submit">Sign Up</button>
+</form>
+
         </div>
     </div>
 </div>

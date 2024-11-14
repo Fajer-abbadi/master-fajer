@@ -33,6 +33,7 @@ class MessageController extends Controller
         return response()->json($messages);
     }
 
+
     // دالة لإرسال رسالة
     public function store(Request $request)
     {
@@ -77,4 +78,19 @@ class MessageController extends Controller
         $users = User::where('id', '<>', $this->adminId)->get(['id', 'name']); // جلب قائمة المستخدمين باستثناء الأدمن
         return response()->json($users);
     }
+    public function getNewMessages(Request $request)
+{
+    $lastMessageId = $request->input('lastMessageId'); // آخر رسالة تم تحميلها
+
+    $messages = Message::where('id', '>', $lastMessageId)
+                       ->where(function ($query) {
+                           $query->where('sender_id', Auth::id())
+                                 ->orWhere('receiver_id', Auth::id());
+                       })
+                       ->orderBy('created_at', 'ASC')
+                       ->get();
+
+    return response()->json($messages);
+}
+
 }

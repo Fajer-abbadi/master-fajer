@@ -1,5 +1,7 @@
 <?php
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Http\Request;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\ProductdetailsController;
@@ -27,6 +29,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\HomeController;
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -36,6 +39,10 @@ use App\Http\Controllers\HomeController;
 // Routes for Login and Register
 Route::get('/login', [AuthController::class, 'loginForm'])->name('login1');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::get('/check-auth', function () {
+    return response()->json(['isAuthenticated' => Auth::check()]);
+});
+
 Route::get('/register', [AuthController::class, 'registerForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register1');
 

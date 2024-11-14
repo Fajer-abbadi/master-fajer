@@ -9,24 +9,23 @@ use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-   public function index(Request $request)
+  public function index(Request $request)
 {
-    $category_id = $request->input('category_id'); // لجلب الفئة المختارة إذا وُجدت
-    $categories = Category::all(); // جلب كل الفئات
+    $category_id = $request->input('category_id');
+    $categories = Category::all();
 
-    // إذا تم اختيار فئة معينة، جلب المنتجات حسب الفئة مع الصور، وإلا جلب جميع المنتجات مع الصور
     if ($category_id) {
         $products = Product::where('category_id', $category_id)->with('images')->get();
     } else {
         $products = Product::with('images')->get();
-        $hotProducts = Product::where('is_hot', true)->take(4)->get(); // استرجاع 5 منتجات على سبيل المثال
-        // dd('No images found for this product');
-
-         // جلب 6 منتجات فقط في حالة "All"
+        $hotProducts = Product::where('is_hot', true)->take(4)->get();
     }
 
-    return view('home.index', compact('products', 'categories','hotProducts'));
+    $receiverId = 5; // مثال: يمكنك تعيين معرف الأدمن هنا أو جلبه من قاعدة البيانات
+
+    return view('home.index', compact('products', 'categories', 'hotProducts', 'receiverId'));
 }
+
 
 
 
@@ -44,6 +43,8 @@ public function getProducts(Request $request)
     // إعادة المنتجات بصيغة JSON
     return response()->json([
         'products' => $products->map(function ($product) {
+            $averageRating = round($product->reviews->avg('rating')); // Calculate average rating and round it
+
             return [
                 'name' => $product->name,
                 'price' => $product->price,
@@ -52,6 +53,9 @@ public function getProducts(Request $request)
                     return $image->image_url; // جلب URL الصورة
                 }), // قائمة من الصور
                 'category_name' => $product->category->name,
+                'productUrl' => route('product.details', ['id' => $product->id]) ,// Add the product details URL
+                'averageRating' => $averageRating // Include average rating in JSON response
+
             ];
         })
     ]);
@@ -89,4 +93,3 @@ public function getHotProducts()
         return view('home.product-details', ['id' => $id]);
     }
 }
-

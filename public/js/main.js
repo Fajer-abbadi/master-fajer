@@ -165,7 +165,7 @@ Created: Colorib
     // Uncomment below and use your date //
 
     /* var timerdate = "2020/12/30" */
-
+    var timerdate=13/11/2024
 	$("#countdown-time").countdown(timerdate, function(event) {
         $(this).html(event.strftime("<div class='countdown__item'><span>%D</span> <p>Day</p> </div>" + "<div class='countdown__item'><span>%H</span> <p>Hour</p> </div>" + "<div class='countdown__item'><span>%M</span> <p>Min</p> </div>" + "<div class='countdown__item'><span>%S</span> <p>Sec</p> </div>"));
     });
@@ -201,7 +201,7 @@ Created: Colorib
 			$('.product__big__img').attr({src: imgurl});
 		}
     });
-    
+
     /*-------------------
 		Quantity change
 	--------------------- */
@@ -223,7 +223,7 @@ Created: Colorib
 		}
 		$button.parent().find('input').val(newVal);
     });
-    
+
     /*-------------------
 		Radio Btn
 	--------------------- */
