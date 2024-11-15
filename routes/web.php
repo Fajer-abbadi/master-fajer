@@ -8,7 +8,7 @@ use App\Http\Controllers\ProductdetailsController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\WishlistController;
-
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\PostController;
@@ -230,4 +230,12 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::post('/messages/store', [MessageController::class, 'store'])->name('messages.store');
+Route::post('/messages', [MessageController::class, 'store'])->name('messages.new');
 
+
+Route::get('/messages/unread', [MessageController::class, 'getUnreadMessages'])->name('messages.unread');
+Route::get('/notifications/unread-count', [NotificationController::class, 'getUnreadNotificationCount'])->name('notifications.unread_count');
+Route::get('/user/notifications', [NotificationController::class, 'getUnreadMessages'])->name('notifications.unread');
+Route::get('/notifications/unread', [NotificationController::class, 'getUnreadMessages'])->name('notifications.unread');
+Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+Route::get('/notifications', [HomeController::class, 'showNotifications'])->name('notifications.show');

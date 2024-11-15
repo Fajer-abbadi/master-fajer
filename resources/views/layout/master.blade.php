@@ -108,9 +108,79 @@
                 <div class="header__right" style="display: flex; align-items: center; justify-content: flex-end;">
                     <div class="header__right__auth" style="margin-right: 20px;">
                         @if(Auth::check())
-                        <a href="{{ route('user.dashboard') }}" style="text-decoration: none; color: rgb(140, 133, 133); font-size: 16px; margin-right: 10px;">
-                            <i class="fa fa-user" aria-hidden="true"></i>
-                        </a>
+                        <div style="position: relative; display: inline-block;">
+                            <!-- أيقونة المستخدم التي تنقل إلى صفحة الداشبورد -->
+                            <a href="{{ route('user.dashboard') }}" style="text-decoration: none; color: rgb(140, 133, 133); font-size: 16px; margin-right: 10px;">
+                                <i class="fa fa-user" aria-hidden="true"></i>
+                            </a>
+
+                            <!-- زر الإشعار لعرض الرسائل -->
+                            <button id="notificationButton" style="background: none; border: none; color: rgb(140, 133, 133); position: relative; cursor: pointer;">
+                                <i class="fa fa-bell" aria-hidden="true"></i>
+                                <span id="notificationCount" style="position: absolute; top: -5px; right: -10px; background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 12px;">
+                                    {{ $unreadCount ?? 0 }}
+                                </span>
+                            </button>
+
+                            <!-- قائمة الرسائل المنسدلة -->
+                            <div id="notificationDropdown" style="display: none; position: absolute; top: 30px; right: 0; background: white; border: 1px solid #ddd; border-radius: 5px; width: 250px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); z-index: 1000;">
+                                <div style="padding: 10px; font-weight: bold; border-bottom: 1px solid #ddd;">Messages</div>
+                                <div id="notificationMessages" style="max-height: 200px; overflow-y: auto; padding: 10px;">
+                                    <!-- الرسائل ستظهر هنا -->
+                                </div>
+                            </div>
+
+                            <script>
+                                // عند الضغط على زر الإشعار لتصفير العداد وعرض الرسائل
+                                document.getElementById('notificationButton').addEventListener('click', function() {
+                                    // تصفير العداد
+                                    document.getElementById('notificationCount').textContent = '0';
+
+                                    // عرض أو إخفاء قائمة الرسائل
+                                    const messageDropdown = document.getElementById('notificationDropdown');
+                                    messageDropdown.style.display = messageDropdown.style.display === 'none' ? 'block' : 'none';
+
+                                    // جلب الرسائل وعرضها في القائمة
+                                    fetch('{{ route("notifications.unread") }}')
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            const messageList = document.getElementById('notificationMessages');
+                                            messageList.innerHTML = ''; // تفريغ القائمة قبل عرض الرسائل الجديدة
+
+                                            if (data.messages.length === 0) {
+                                                messageList.innerHTML = '<div style="padding: 10px; color: gray;">No new messages</div>';
+                                            } else {
+                                                data.messages.forEach(message => {
+                                                    const messageItem = document.createElement('div');
+                                                    messageItem.style.padding = '10px';
+                                                    messageItem.style.borderBottom = '1px solid #eee';
+                                                    messageItem.textContent = message.message;
+                                                    messageList.appendChild(messageItem);
+                                                });
+                                            }
+                                        })
+                                        .catch(error => console.error('Error fetching messages:', error));
+                                });
+
+                                // تحديث العداد تلقائيًا كل 30 ثانية لمعرفة إذا كان هناك رسائل جديدة
+                                setInterval(function() {
+                                    fetch('{{ route("notifications.unread") }}')
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            const notificationCount = document.getElementById('notificationCount');
+                                            // إذا كانت هناك رسائل غير مقروءة، يعرض الرقم 1، وإلا يعرض 0
+                                            notificationCount.textContent = data.messages.length > 0 ? '1' : '0';
+                                        })
+                                        .catch(error => console.error('Error fetching unread count:', error));
+                                }, 30000); // 30000 ميلي ثانية = 30 ثانية
+                            </script>
+
+
+
+
+
+
+
                                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: inline;">
                                 @csrf
                                 <button type="submit" style="background-color: transparent; border: none; color: rgb(140, 133, 133); font-size: 16px; cursor: pointer;">Logout</button>
